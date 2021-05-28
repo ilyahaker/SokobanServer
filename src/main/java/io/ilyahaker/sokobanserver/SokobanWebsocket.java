@@ -1,10 +1,14 @@
 package io.ilyahaker.sokobanserver;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import io.ilyahaker.sokobanserver.objects.GameObject;
+import io.ilyahaker.utils.Pair;
 import io.ilyahaker.websocket.Websocket;
 
 import java.net.Socket;
+import java.util.Arrays;
 
 public class SokobanWebsocket extends Websocket {
     private GameObject[][] startMatrix;
@@ -12,12 +16,36 @@ public class SokobanWebsocket extends Websocket {
 
     public SokobanWebsocket(Socket clientSocket, GameObject[][] startMatrix) {
         super(clientSocket);
-        this.startMatrix = startMatrix;
+        this.startMatrix = new GameObject[startMatrix.length][startMatrix[0].length];
+        for (int i = 0; i < startMatrix.length; i++) {
+            this.startMatrix[i] = startMatrix[i].clone();
+        }
+//        this.startMatrix = Arrays.copyOf(startMatrix, startMatrix.length);
+//        this.startMatrix = startMatrix.clone();
     }
 
     @Override
     protected void onStart() {
-        this.session = new GameSession(startMatrix, this);
+        Pair<Integer, Integer> playerPosition = new Pair<>(1, 1);
+        this.session = new GameSession(startMatrix, playerPosition, this);
+    }
+
+    @Override
+    protected void onText(String message) {
+        JsonParser parser = new JsonParser();
+        JsonElement element = parser.parse(message.toString());
+        JsonObject object = element.getAsJsonObject();
+        if (!object.has("type")) {
+            return;
+        }
+
+        if (!object.get("type").getAsString().equals("click")) {
+            return;
+        }
+
+        int row = object.get("i").getAsInt();
+        int column = object.get("j").getAsInt();
+        session.handleClick(row, column);
     }
 
     public void sendInventory(GameObject[][] matrix, int currentRow, int currentColumn) {

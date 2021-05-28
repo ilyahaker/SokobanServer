@@ -1,28 +1,30 @@
 io/ilyahaker/utils/Pair.java
  io.ilyahaker.utils.Pair
-io/ilyahaker/sokobanserver/GameSession.java
- io.ilyahaker.sokobanserver.GameSession
+io/ilyahaker/sokobanserver/objects/DecorationObject.java
+ io.ilyahaker.sokobanserver.objects.DecorationObject
 io/ilyahaker/sokobanserver/objects/GameObject.java
  io.ilyahaker.sokobanserver.objects.GameObject
+io/ilyahaker/websocket/WebsocketServer.java
+ io.ilyahaker.websocket.WebsocketServer
 io/ilyahaker/sokobanserver/objects/GamePlayerImpl.java
  io.ilyahaker.sokobanserver.objects.GamePlayerImpl
-io/ilyahaker/sokobanserver/SokobanServer.java
- io.ilyahaker.sokobanserver.SokobanServer
-io/ilyahaker/websocket/Websocket.java
- io.ilyahaker.websocket.Websocket
+io/ilyahaker/sokobanserver/Main.java
+ io.ilyahaker.sokobanserver.Main
 io/ilyahaker/sokobanserver/objects/GameObjectImpl.java
  io.ilyahaker.sokobanserver.objects.GameObjectImpl
 io/ilyahaker/sokobanserver/objects/MovableGameObject.java
  io.ilyahaker.sokobanserver.objects.MovableGameObject
-io/ilyahaker/websocket/WebsocketServer.java
- io.ilyahaker.websocket.WebsocketServer
-io/ilyahaker/websocket/AbstractWebsocket.java
- io.ilyahaker.websocket.AbstractWebsocket
-io/ilyahaker/sokobanserver/Main.java
- io.ilyahaker.sokobanserver.Main
-io/ilyahaker/sokobanserver/objects/DecorationObject.java
- io.ilyahaker.sokobanserver.objects.DecorationObject
+io/ilyahaker/sokobanserver/SokobanServer.java
+ io.ilyahaker.sokobanserver.SokobanServer
+io/ilyahaker/sokobanserver/objects/Material.java
+ io.ilyahaker.sokobanserver.objects.Material
 io/ilyahaker/sokobanserver/objects/GamePlayer.java
  io.ilyahaker.sokobanserver.objects.GamePlayer
+io/ilyahaker/websocket/AbstractWebsocket.java
+ io.ilyahaker.websocket.AbstractWebsocket
+io/ilyahaker/sokobanserver/GameSession.java
+ io.ilyahaker.sokobanserver.GameSession
+io/ilyahaker/websocket/Websocket.java
+ io.ilyahaker.websocket.Websocket
 io/ilyahaker/sokobanserver/SokobanWebsocket.java
  io.ilyahaker.sokobanserver.SokobanWebsocket

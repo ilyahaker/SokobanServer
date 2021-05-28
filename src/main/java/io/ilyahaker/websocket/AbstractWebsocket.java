@@ -182,26 +182,32 @@ public abstract class AbstractWebsocket {
                     message[j] = (byte) (b[i] ^ masks[j % 4]);
                 }
 
-                switch ((byte) (b[0] & op)) {
-                    case 1:
-                        onText(new String(message));
-                        break;
-                    case 2:
-                        onBinary();
-                        break;
-                    case 8:
+                try {
+                    switch ((byte) (b[0] & op)) {
+                        case 1:
+                            onText(new String(message));
+                            break;
+                        case 2:
+                            onBinary();
+                            break;
+                        case 8:
 //                        int code = //TODO I don't know how to get close code
-                        inputStream.close();
-                        clientSocket.close();
-                        onClose(new String(message));
+                            inputStream.close();
+                            clientSocket.close();
+                            onClose(new String(message));
 //                        return code;
-                        return 1000;
-                    case 9:
-                        onPing(new String(message));
-                        break;
-                    case 10:
-                        onPong(new String(message));
-                        break;
+                            return 1000;
+                        case 9:
+                            onPing(new String(message));
+                            break;
+                        case 10:
+                            onPong(new String(message));
+                            break;
+                    }
+                } catch (Exception e) {
+                    inputStream.close();
+                    clientSocket.close();
+                    throw e;
                 }
 
                 b = new byte[1024];
