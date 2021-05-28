@@ -32,4 +32,9 @@ public class Websocket extends AbstractWebsocket {
     protected void onBinary() {
 
     }
+
+    @Override
+    protected void onStart() {
+        sendText("Hello from server!");
+    }
 }

@@ -5,6 +5,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.TimeUnit;
 
 public class WebsocketServer {
 
@@ -12,6 +13,11 @@ public class WebsocketServer {
 
     public WebsocketServer(int port) {
         this.port = port;
+    }
+
+    protected int createWebsocket(Socket clientSocket) {
+        Websocket websocket = new Websocket(clientSocket);
+        return websocket.load();
     }
 
     public void loadServer() {
@@ -22,15 +28,13 @@ public class WebsocketServer {
             throw new IllegalStateException("Could not create web server", exception);
         }
 
-        ForkJoinPool forkJoinPool = new ForkJoinPool(1000, ForkJoinPool.defaultForkJoinWorkerThreadFactory, null, false);
+        ForkJoinPool forkJoinPool = new ForkJoinPool(1000, ForkJoinPool.defaultForkJoinWorkerThreadFactory, null, false,
+                0, 0x7fff, 1, null, 5L, TimeUnit.MINUTES);
         while (true) {
             try {
                 Socket clientSocket = server.accept(); //waits until a client connects
 
-                CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> {
-                    Websocket websocket = new Websocket(clientSocket);
-                    return websocket.load();
-                }, forkJoinPool);
+                CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> createWebsocket(clientSocket), forkJoinPool);
 
                 future.whenComplete(((code, throwable) -> {
                     System.out.println("Websocket has been closed by code: " + code);

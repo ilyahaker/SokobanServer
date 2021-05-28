@@ -41,7 +41,7 @@ public abstract class AbstractWebsocket {
             throw new IllegalStateException("Could not connect to client input stream", handShakeException);
         }
 
-        sendText("Hello from Server!");
+        onStart();
 
         try {
             return printInputStream(inputStream);
@@ -223,7 +223,9 @@ public abstract class AbstractWebsocket {
 
     protected abstract void onBinary();
 
-    protected void sendText(String message) {
+    protected abstract void onStart();
+
+    public void sendText(String message) {
         try {
             outputStream.write(encode(message));
             outputStream.flush();
