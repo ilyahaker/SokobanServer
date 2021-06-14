@@ -3,7 +3,7 @@ package io.ilyahaker.sokobanserver.objects;
 import lombok.Getter;
 import lombok.Setter;
 
-public class GamePlayerImpl extends MovableGameObject implements GamePlayer {
+public class GamePlayerImpl extends MovableGameObjectImpl implements GamePlayer {
 
     @Getter
     @Setter

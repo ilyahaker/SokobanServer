@@ -1,11 +1,13 @@
 package io.ilyahaker.websocket;
 
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.TimeUnit;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.websocket.jsr356.server.ServerContainer;
+import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer;
+
+import javax.servlet.ServletContext;
+import javax.websocket.DeploymentException;
 
 public class WebsocketServer {
 
@@ -15,36 +17,39 @@ public class WebsocketServer {
         this.port = port;
     }
 
-    protected int createWebsocket(Socket clientSocket) {
-        Websocket websocket = new Websocket(clientSocket);
-        return websocket.load();
+    public void initWebsocket(ServletContext servletContext, ServerContainer wsContainer) throws DeploymentException {
+        // Configure defaults for container
+        wsContainer.setDefaultMaxTextMessageBufferSize(65535);
+
+        // Add WebSocket endpoint to javax.websocket layer
+        wsContainer.addEndpoint(Websocket.class);
     }
 
     public void loadServer() {
-        ServerSocket server;
+        Server server = new Server();
+        ServerConnector connector = new ServerConnector(server);
+        connector.setPort(port);
+        server.addConnector(connector);
+
+        // Setup the basic application "context" for this application at "/"
+        // This is also known as the handler tree (in jetty speak)
+        ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+        context.setContextPath("/");
+        server.setHandler(context);
+
         try {
-            server = new ServerSocket(port);
-        } catch (IOException exception) {
-            throw new IllegalStateException("Could not create web server", exception);
-        }
+            // Initialize javax.websocket layer
+            WebSocketServerContainerInitializer.configure(context, (servletContext, wsContainer) -> {
+                // This lambda will be called at the appropriate place in the
+                // ServletContext initialization phase where you can initialize
+                // and configure  your websocket container.
+                initWebsocket(servletContext, wsContainer);
+            });
 
-        ForkJoinPool forkJoinPool = new ForkJoinPool(1000, ForkJoinPool.defaultForkJoinWorkerThreadFactory, null, false,
-                0, 0x7fff, 1, null, 5L, TimeUnit.MINUTES);
-        while (true) {
-            try {
-                Socket clientSocket = server.accept(); //waits until a client connects
-
-                CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> createWebsocket(clientSocket), forkJoinPool);
-
-                future.whenComplete(((code, throwable) -> {
-                    System.out.println("Websocket has been closed by code: " + code);
-                    if (throwable != null) {
-                        throwable.printStackTrace();
-                    }
-                }));
-            } catch (IOException waitException) {
-                throw new IllegalStateException("Could not wait for client connection", waitException);
-            }
+            server.start();
+            server.join();
+        } catch (Throwable t) {
+            t.printStackTrace(System.err);
         }
     }
 }

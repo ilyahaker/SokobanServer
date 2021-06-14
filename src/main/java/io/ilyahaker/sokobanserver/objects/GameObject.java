@@ -6,8 +6,6 @@ public interface GameObject {
 
     JsonObject getItem();
 
-    GameObject getUnderObject();
-
-    void setUnderObject(GameObject object);
+    GameObjectType getType();
 
 }

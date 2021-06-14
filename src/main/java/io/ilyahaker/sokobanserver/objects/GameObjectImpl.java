@@ -1,13 +1,18 @@
 package io.ilyahaker.sokobanserver.objects;
 
 import com.google.gson.JsonObject;
+import lombok.Getter;
 
 public abstract class GameObjectImpl implements GameObject {
 
     private final String material;
 
-    public GameObjectImpl(String material) {
+    @Getter
+    private final GameObjectType type;
+
+    public GameObjectImpl(String material, GameObjectType type) {
         this.material = material;
+        this.type = type;
     }
 
     @Override

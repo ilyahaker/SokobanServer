@@ -7,31 +7,21 @@ import io.ilyahaker.sokobanserver.objects.GameObject;
 import io.ilyahaker.utils.Pair;
 import io.ilyahaker.websocket.Websocket;
 
-import java.net.Socket;
-import java.util.Arrays;
+import javax.websocket.Session;
+import javax.websocket.server.ServerEndpoint;
 
-public class SokobanWebsocket extends Websocket {
-    private GameObject[][] startMatrix;
+@ServerEndpoint(value = "/socoban/")
+public class SocobanSocket extends Websocket {
     private GameSession session;
 
-    public SokobanWebsocket(Socket clientSocket, GameObject[][] startMatrix) {
-        super(clientSocket);
-        this.startMatrix = new GameObject[startMatrix.length][startMatrix[0].length];
-        for (int i = 0; i < startMatrix.length; i++) {
-            this.startMatrix[i] = startMatrix[i].clone();
-        }
-//        this.startMatrix = Arrays.copyOf(startMatrix, startMatrix.length);
-//        this.startMatrix = startMatrix.clone();
-    }
-
     @Override
-    protected void onStart() {
+    protected void onOpen(Session session) {
         Pair<Integer, Integer> playerPosition = new Pair<>(1, 1);
-        this.session = new GameSession(startMatrix, playerPosition, this);
+        this.session = new GameSession(Levels.LEVEL_1.getStart(), playerPosition, this, session);
     }
 
     @Override
-    protected void onText(String message) {
+    protected void onText(Session session, String message) {
         JsonParser parser = new JsonParser();
         JsonElement element = parser.parse(message.toString());
         JsonObject object = element.getAsJsonObject();
@@ -45,10 +35,11 @@ public class SokobanWebsocket extends Websocket {
 
         int row = object.get("i").getAsInt();
         int column = object.get("j").getAsInt();
-        session.handleClick(row, column);
+        this.session.handleClick(row, column);
     }
 
-    public void sendInventory(GameObject[][] matrix, int currentRow, int currentColumn) {
+
+    public void sendInventory(Session session, GameObject[][] matrix, int currentRow, int currentColumn) {
         JsonObject inventory = new JsonObject();
         for (int row = 0; row < 6; row++) {
             boolean empty = true;
@@ -66,7 +57,7 @@ public class SokobanWebsocket extends Websocket {
             }
         }
 
-        sendText(inventory.toString());
+        sendText(inventory.toString(), session);
     }
 
     private JsonObject getItem(GameObject[][] matrix, int row, int column) {
@@ -77,5 +68,4 @@ public class SokobanWebsocket extends Websocket {
             return null;
         }
     }
-
 }

@@ -1,15 +1,9 @@
 package io.ilyahaker.sokobanserver.objects;
 
-import lombok.Getter;
-import lombok.Setter;
+public interface MovableGameObject extends GameObject {
 
-public class MovableGameObject extends GameObjectImpl {
+    GameObject getUnderObject();
 
-    @Getter
-    @Setter
-    private GameObject underObject;
+    void setUnderObject(GameObject object);
 
-    public MovableGameObject(String material) {
-        super(material);
-    }
 }
