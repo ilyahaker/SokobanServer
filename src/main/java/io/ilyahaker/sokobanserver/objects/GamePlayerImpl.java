@@ -14,7 +14,7 @@ public class GamePlayerImpl extends MovableGameObjectImpl implements GamePlayer 
     private int coordinateY;
 
     public GamePlayerImpl(int coordinateX, int coordinateY) {
-        super(Material.PLAYER_HEAD);
+        super(Material.PLAYER_HEAD, "Player");
         this.coordinateX = coordinateX;
         this.coordinateY = coordinateY;
     }

@@ -9,7 +9,7 @@ public class MovableGameObjectImpl extends GameObjectImpl implements MovableGame
     @Setter
     private GameObject underObject;
 
-    public MovableGameObjectImpl(Material material) {
-        super(material, GameObjectType.MOVABLE);
+    public MovableGameObjectImpl(Material material, String name) {
+        super(material, GameObjectType.MOVABLE, name);
     }
 }

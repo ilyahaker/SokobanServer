@@ -10,9 +10,13 @@ public abstract class GameObjectImpl implements GameObject {
     @Getter
     private final GameObjectType type;
 
-    public GameObjectImpl(Material material, GameObjectType type) {
+    @Getter
+    private final String name;
+
+    public GameObjectImpl(Material material, GameObjectType type, String name) {
         this.material = material;
         this.type = type;
+        this.name = name;
     }
 
     @Override

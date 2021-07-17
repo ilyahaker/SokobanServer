@@ -3,6 +3,7 @@ package io.ilyahaker.sokobanserver;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import io.ilyahaker.sokobanserver.menu.Menu;
 import io.ilyahaker.sokobanserver.objects.GameObject;
 import io.ilyahaker.utils.Pair;
 import io.ilyahaker.websocket.Websocket;
@@ -17,7 +18,7 @@ public class SocobanSocket extends Websocket {
     @Override
     protected void onOpen(Session session) {
         Pair<Integer, Integer> playerPosition = new Pair<>(1, 1);
-        this.session = new GameSession(Levels.LEVEL_1.getStart(), playerPosition, this, session);
+        this.session = new GameSession(new Menu(), this, session);
     }
 
     @Override

@@ -8,4 +8,6 @@ public interface GameObject {
 
     GameObjectType getType();
 
+    String getName();
+
 }

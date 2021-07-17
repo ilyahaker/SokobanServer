@@ -3,7 +3,7 @@ package io.ilyahaker.sokobanserver.objects;
 public class BoxObjectImpl extends MovableGameObjectImpl implements BoxObject {
 
     public BoxObjectImpl() {
-        super(Material.WHITE_SHULKER_BOX);
+        super(Material.WHITE_SHULKER_BOX, "Box");
     }
 
     @Override

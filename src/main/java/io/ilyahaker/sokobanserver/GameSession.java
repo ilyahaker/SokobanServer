@@ -1,5 +1,6 @@
 package io.ilyahaker.sokobanserver;
 
+import io.ilyahaker.sokobanserver.menu.Menu;
 import io.ilyahaker.sokobanserver.objects.*;
 import io.ilyahaker.utils.Pair;
 
@@ -10,7 +11,7 @@ import java.util.Arrays;
 
 public class GameSession {
 
-    private final GameObject[][] matrix;
+    private GameObject[][] matrix;
 
     private int currentColumn = 0, currentRow = 0;
 
@@ -20,24 +21,17 @@ public class GameSession {
 
     private final Session session;
 
-    private final long countFinish;
+    private final Menu menu;
+
+    private long countFinish;
     private long filledFinishes;
 
-    public GameSession(GameObject[][] matrix, Pair<Integer, Integer> playerPosition, SocobanSocket websocket, Session session) {
+    public GameSession(Menu menu, SocobanSocket websocket, Session session) {
+        this.menu = menu;
         this.websocket = websocket;
         this.session = session;
-        this.currentRow = matrix.length > 6 ? Math.max(playerPosition.getKey() - 3, 0) : 0;
-        this.currentColumn = matrix[0].length > 9 ? Math.max(playerPosition.getValue() - 5, 0) : 0;
-        this.matrix = matrix;
+        this.matrix = menu.getMenu();
 
-        countFinish = Arrays.stream(matrix)
-                .flatMap(Arrays::stream)
-                .filter(object -> object != null && object.getType() == GameObjectType.FINISH)
-                .count();
-
-        this.player = new GamePlayerImpl(playerPosition.getKey(), playerPosition.getValue());
-        player.setUnderObject(matrix[player.getCoordinateX()][player.getCoordinateY()]);
-        matrix[player.getCoordinateX()][player.getCoordinateY()] = player;
         fillInventory();
     }
 
@@ -147,19 +141,56 @@ public class GameSession {
     }
 
     public void handleClick(int row, int column) {
-        int differenceRow = player.getCoordinateX() - row - currentRow,
-                differenceColumn = player.getCoordinateY() - column - currentColumn;
+        int finalRow = row + currentRow,
+                finalColumn = column + currentColumn;
+
+        if (matrix[finalRow][finalColumn] != null) {
+            switch (matrix[finalRow][finalColumn].getType()) {
+                case CHOOSE_LEVEL:
+                    Level level = menu.chooseLevel(finalRow, finalColumn);
+                    matrix = level.getMap();
+                    currentRow = level.getStartCurrentRow();
+                    currentColumn = level.getStartCurrentColumn();
+
+                    countFinish = Arrays.stream(matrix)
+                            .flatMap(Arrays::stream)
+                            .filter(object -> object != null && object.getType() == GameObjectType.FINISH)
+                            .count();
+
+                    this.player = new GamePlayerImpl(level.getPlayerPosition().getKey(), level.getPlayerPosition().getValue());
+                    player.setUnderObject(matrix[player.getCoordinateX()][player.getCoordinateY()]);
+                    matrix[player.getCoordinateX()][player.getCoordinateY()] = player;
+
+                    fillInventory();
+                    return;
+                case PAGE_UP:
+                    menu.pageUp();
+                    this.matrix = menu.getMenu();
+
+                    fillInventory();
+                    return;
+                case PAGE_DOWN:
+                    menu.pageDown();
+                    this.matrix = menu.getMenu();
+
+                    fillInventory();
+                    return;
+            }
+        }
+
+        int differenceRow = player.getCoordinateX() - finalRow,
+                differenceColumn = player.getCoordinateY() - finalColumn;
 
         //inverse XOR operation
         if ((Math.abs(differenceRow) == 1 && Math.abs(differenceColumn) == 0) == (Math.abs(differenceColumn) == 1 && Math.abs(differenceRow) == 0)) {
             return;
         }
 
-        Pair<Integer, Integer> currentPlayerPosition = new Pair<>(row + currentRow, column + currentColumn);
+        Pair<Integer, Integer> currentPlayerPosition = new Pair<>(finalRow, finalColumn);
 
         //changing the starting point depending on player position
         if (differenceRow < 0) {
-            if (!moveObject(row + currentRow, column + currentColumn, player, Direction.UP)) {
+            if (!moveObject(finalRow, finalColumn, player, Direction.UP)) {
                 return;
             }
 
@@ -167,7 +198,7 @@ public class GameSession {
                 currentRow = Math.max(currentPlayerPosition.getKey() - 3, 0);
             }
         } else if (differenceRow > 0) {
-            if (!moveObject(row + currentRow, column + currentColumn, player, Direction.DOWN)) {
+            if (!moveObject(finalRow, finalColumn, player, Direction.DOWN)) {
                 return;
             }
 
@@ -175,7 +206,7 @@ public class GameSession {
                 currentRow = Math.max(currentPlayerPosition.getKey() - 2, 0);
             }
         } else if (differenceColumn < 0) {
-            if (!moveObject(row + currentRow, column + currentColumn, player, Direction.RIGHT)) {
+            if (!moveObject(finalRow, finalColumn, player, Direction.RIGHT)) {
                 return;
             }
 
@@ -183,7 +214,7 @@ public class GameSession {
                 currentColumn = Math.max(currentPlayerPosition.getValue() - 4, 0);
             }
         } else if (differenceColumn > 0) {
-            if (!moveObject(row + currentRow, column + currentColumn, player, Direction.LEFT)) {
+            if (!moveObject(finalRow, finalColumn, player, Direction.LEFT)) {
                 return;
             }
 
@@ -202,11 +233,16 @@ public class GameSession {
 
         if (filledFinishes == countFinish) {
             System.out.println("PLAYER WON!!!!");
-            try {
-                session.close(new CloseReason(CloseReason.CloseCodes.NORMAL_CLOSURE, "Player has been won!"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            this.matrix = menu.getMenu();
+            currentRow = 0;
+            currentColumn = 0;
+
+            fillInventory();
+//            try {
+//                session.close(new CloseReason(CloseReason.CloseCodes.NORMAL_CLOSURE, "Player has been won!"));
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
         }
     }
 
