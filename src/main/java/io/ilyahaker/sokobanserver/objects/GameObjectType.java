@@ -1,5 +1,5 @@
 package io.ilyahaker.sokobanserver.objects;
 
 public enum GameObjectType {
-    MOVABLE, DECORATION, WALL
+    MOVABLE, DECORATION, WALL, FINISH, BOX
 }

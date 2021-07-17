@@ -3,7 +3,10 @@ package io.ilyahaker.sokobanserver;
 import io.ilyahaker.sokobanserver.objects.*;
 import io.ilyahaker.utils.Pair;
 
+import javax.websocket.CloseReason;
 import javax.websocket.Session;
+import java.io.IOException;
+import java.util.Arrays;
 
 public class GameSession {
 
@@ -17,12 +20,20 @@ public class GameSession {
 
     private final Session session;
 
+    private final long countFinish;
+    private long filledFinishes;
+
     public GameSession(GameObject[][] matrix, Pair<Integer, Integer> playerPosition, SocobanSocket websocket, Session session) {
         this.websocket = websocket;
         this.session = session;
         this.currentRow = matrix.length > 6 ? Math.max(playerPosition.getKey() - 3, 0) : 0;
         this.currentColumn = matrix[0].length > 9 ? Math.max(playerPosition.getValue() - 5, 0) : 0;
         this.matrix = matrix;
+
+        countFinish = Arrays.stream(matrix)
+                .flatMap(Arrays::stream)
+                .filter(object -> object != null && object.getType() == GameObjectType.FINISH)
+                .count();
 
         this.player = new GamePlayerImpl(playerPosition.getKey(), playerPosition.getValue());
         player.setUnderObject(matrix[player.getCoordinateX()][player.getCoordinateY()]);
@@ -43,7 +54,7 @@ public class GameSession {
             return false;
         }
 
-        if (gameObject.getType() != GameObjectType.MOVABLE) {
+        if (gameObject.getType() != GameObjectType.MOVABLE && gameObject.getType() != GameObjectType.BOX) {
             return true;
         }
 
@@ -56,33 +67,77 @@ public class GameSession {
         switch (direction) {
             case RIGHT:
                 if (moveObject(finalRow, finalColumn + 1, object, direction)) {
+                    if (movableGameObject.getType() == GameObjectType.BOX
+                            && movableGameObject.getUnderObject() != null && movableGameObject.getUnderObject().getType() == GameObjectType.FINISH) {
+                        filledFinishes--;
+                    }
+
                     matrix[finalRow][finalColumn - 1] = movableGameObject.getUnderObject();
                     movableGameObject.setUnderObject(matrix[finalRow][finalColumn]);
                     matrix[finalRow][finalColumn] = movableGameObject;
+
+                    if (movableGameObject.getType() == GameObjectType.BOX
+                            && movableGameObject.getUnderObject() != null && movableGameObject.getUnderObject().getType() == GameObjectType.FINISH) {
+                        filledFinishes++;
+                    }
+
                     return true;
                 }
                 break;
             case LEFT:
                 if (moveObject(finalRow, finalColumn - 1, object, direction)) {
+                    if (movableGameObject.getType() == GameObjectType.BOX
+                            && movableGameObject.getUnderObject() != null && movableGameObject.getUnderObject().getType() == GameObjectType.FINISH) {
+                        filledFinishes--;
+                    }
+
                     matrix[finalRow][finalColumn + 1] = movableGameObject.getUnderObject();
                     movableGameObject.setUnderObject(matrix[finalRow][finalColumn]);
                     matrix[finalRow][finalColumn] = movableGameObject;
+
+                    if (movableGameObject.getType() == GameObjectType.BOX
+                            && movableGameObject.getUnderObject() != null && movableGameObject.getUnderObject().getType() == GameObjectType.FINISH) {
+                        filledFinishes++;
+                    }
+
                     return true;
                 }
                 break;
             case DOWN:
                 if (moveObject(finalRow - 1, finalColumn, object, direction)) {
+                    if (movableGameObject.getType() == GameObjectType.BOX
+                            && movableGameObject.getUnderObject() != null && movableGameObject.getUnderObject().getType() == GameObjectType.FINISH) {
+                        filledFinishes--;
+                    }
+
                     matrix[finalRow + 1][finalColumn] = movableGameObject.getUnderObject();
                     movableGameObject.setUnderObject(matrix[finalRow][finalColumn]);
                     matrix[finalRow][finalColumn] = movableGameObject;
+
+                    if (movableGameObject.getType() == GameObjectType.BOX
+                            && movableGameObject.getUnderObject() != null && movableGameObject.getUnderObject().getType() == GameObjectType.FINISH) {
+                        filledFinishes++;
+                    }
+
                     return true;
                 }
                 break;
             case UP:
                 if (moveObject(finalRow + 1, finalColumn, object, direction)) {
+                    if (movableGameObject.getType() == GameObjectType.BOX
+                            && movableGameObject.getUnderObject() != null && movableGameObject.getUnderObject().getType() == GameObjectType.FINISH) {
+                        filledFinishes--;
+                    }
+
                     matrix[finalRow - 1][finalColumn] = movableGameObject.getUnderObject();
                     movableGameObject.setUnderObject(matrix[finalRow][finalColumn]);
                     matrix[finalRow][finalColumn] = movableGameObject;
+
+                    if (movableGameObject.getType() == GameObjectType.BOX
+                            && movableGameObject.getUnderObject() != null && movableGameObject.getUnderObject().getType() == GameObjectType.FINISH) {
+                        filledFinishes++;
+                    }
+
                     return true;
                 }
                 break;
@@ -144,6 +199,15 @@ public class GameSession {
         player.setCoordinateX(currentPlayerPosition.getKey());
         player.setCoordinateY(currentPlayerPosition.getValue());
         fillInventory();
+
+        if (filledFinishes == countFinish) {
+            System.out.println("PLAYER WON!!!!");
+            try {
+                session.close(new CloseReason(CloseReason.CloseCodes.NORMAL_CLOSURE, "Player has been won!"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public enum Direction {

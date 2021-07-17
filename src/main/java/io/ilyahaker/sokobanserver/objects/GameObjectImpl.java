@@ -5,12 +5,12 @@ import lombok.Getter;
 
 public abstract class GameObjectImpl implements GameObject {
 
-    private final String material;
+    private final Material material;
 
     @Getter
     private final GameObjectType type;
 
-    public GameObjectImpl(String material, GameObjectType type) {
+    public GameObjectImpl(Material material, GameObjectType type) {
         this.material = material;
         this.type = type;
     }
@@ -18,7 +18,7 @@ public abstract class GameObjectImpl implements GameObject {
     @Override
     public JsonObject getItem() {
         JsonObject item = new JsonObject();
-        item.addProperty("material", material);
+        item.addProperty("material", material.name());
         return item;
     }
 }
