@@ -1,7 +1,9 @@
 io/ilyahaker/sokobanserver/objects/FinishObject.java
  io.ilyahaker.sokobanserver.objects.FinishObject
-io/ilyahaker/sokobanserver/objects/BoxObjectImpl.java
- io.ilyahaker.sokobanserver.objects.BoxObjectImpl
+io/ilyahaker/sokobanserver/GameSession.java
+ io.ilyahaker.sokobanserver.GameSession
+ io.ilyahaker.sokobanserver.GameSession$1
+ io.ilyahaker.sokobanserver.GameSession$Direction
 io/ilyahaker/sokobanserver/objects/BoxObject.java
  io.ilyahaker.sokobanserver.objects.BoxObject
 io/ilyahaker/sokobanserver/TestLevel.java
@@ -10,55 +12,53 @@ io/ilyahaker/sokobanserver/objects/GameObject.java
  io.ilyahaker.sokobanserver.objects.GameObject
 io/ilyahaker/sokobanserver/menu/LevelObject.java
  io.ilyahaker.sokobanserver.menu.LevelObject
-io/ilyahaker/sokobanserver/menu/PageUpObjectImpl.java
- io.ilyahaker.sokobanserver.menu.PageUpObjectImpl
+io/ilyahaker/sokobanserver/menu/PageUpObject.java
+ io.ilyahaker.sokobanserver.menu.PageUpObject
 io/ilyahaker/sokobanserver/FillingStrategy.java
  io.ilyahaker.sokobanserver.FillingStrategy
-io/ilyahaker/sokobanserver/objects/GamePlayerImpl.java
- io.ilyahaker.sokobanserver.objects.GamePlayerImpl
+io/ilyahaker/sokobanserver/objects/GamePlayer.java
+ io.ilyahaker.sokobanserver.objects.GamePlayer
 io/ilyahaker/sokobanserver/SokobanServer.java
  io.ilyahaker.sokobanserver.SokobanServer
 io/ilyahaker/websocket/Websocket.java
  io.ilyahaker.websocket.Websocket
-io/ilyahaker/sokobanserver/objects/MovableGameObjectImpl.java
- io.ilyahaker.sokobanserver.objects.MovableGameObjectImpl
+io/ilyahaker/sokobanserver/objects/Material.java
+ io.ilyahaker.sokobanserver.objects.Material
 io/ilyahaker/sokobanserver/objects/MovableGameObject.java
  io.ilyahaker.sokobanserver.objects.MovableGameObject
-io/ilyahaker/sokobanserver/objects/WallObject.java
- io.ilyahaker.sokobanserver.objects.WallObject
-io/ilyahaker/sokobanserver/menu/LevelObjectImpl.java
- io.ilyahaker.sokobanserver.menu.LevelObjectImpl
+io/ilyahaker/sokobanserver/SocobanSocket.java
+ io.ilyahaker.sokobanserver.SocobanSocket
+io/ilyahaker/sokobanserver/menu/Menu.java
+ io.ilyahaker.sokobanserver.menu.Menu
 io/ilyahaker/sokobanserver/objects/GameObjectType.java
  io.ilyahaker.sokobanserver.objects.GameObjectType
-io/ilyahaker/sokobanserver/objects/FinishObjectIml.java
- io.ilyahaker.sokobanserver.objects.FinishObjectIml
+io/ilyahaker/websocket/WebsocketServer.java
+ io.ilyahaker.websocket.WebsocketServer
 io/ilyahaker/sokobanserver/menu/PageDownObject.java
  io.ilyahaker.sokobanserver.menu.PageDownObject
 io/ilyahaker/sokobanserver/Level.java
  io.ilyahaker.sokobanserver.Level
-io/ilyahaker/sokobanserver/objects/GameObjectImpl.java
- io.ilyahaker.sokobanserver.objects.GameObjectImpl
-io/ilyahaker/utils/Pair.java
- io.ilyahaker.utils.Pair
-io/ilyahaker/websocket/WebsocketServer.java
- io.ilyahaker.websocket.WebsocketServer
 io/ilyahaker/sokobanserver/Main.java
  io.ilyahaker.sokobanserver.Main
-io/ilyahaker/sokobanserver/objects/Material.java
- io.ilyahaker.sokobanserver.objects.Material
+io/ilyahaker/utils/Pair.java
+ io.ilyahaker.utils.Pair
 io/ilyahaker/sokobanserver/menu/PageDownObjectImpl.java
  io.ilyahaker.sokobanserver.menu.PageDownObjectImpl
+io/ilyahaker/sokobanserver/objects/BoxObjectImpl.java
+ io.ilyahaker.sokobanserver.objects.BoxObjectImpl
+io/ilyahaker/sokobanserver/menu/LevelObjectImpl.java
+ io.ilyahaker.sokobanserver.menu.LevelObjectImpl
+io/ilyahaker/sokobanserver/menu/PageUpObjectImpl.java
+ io.ilyahaker.sokobanserver.menu.PageUpObjectImpl
 io/ilyahaker/sokobanserver/objects/DecorationObject.java
  io.ilyahaker.sokobanserver.objects.DecorationObject
-io/ilyahaker/sokobanserver/objects/GamePlayer.java
- io.ilyahaker.sokobanserver.objects.GamePlayer
-io/ilyahaker/sokobanserver/menu/PageUpObject.java
- io.ilyahaker.sokobanserver.menu.PageUpObject
-io/ilyahaker/sokobanserver/menu/Menu.java
- io.ilyahaker.sokobanserver.menu.Menu
-io/ilyahaker/sokobanserver/GameSession.java
- io.ilyahaker.sokobanserver.GameSession
- io.ilyahaker.sokobanserver.GameSession$1
- io.ilyahaker.sokobanserver.GameSession$Direction
-io/ilyahaker/sokobanserver/SocobanSocket.java
- io.ilyahaker.sokobanserver.SocobanSocket
+io/ilyahaker/sokobanserver/objects/GamePlayerImpl.java
+ io.ilyahaker.sokobanserver.objects.GamePlayerImpl
+io/ilyahaker/sokobanserver/objects/WallObject.java
+ io.ilyahaker.sokobanserver.objects.WallObject
+io/ilyahaker/sokobanserver/objects/MovableGameObjectImpl.java
+ io.ilyahaker.sokobanserver.objects.MovableGameObjectImpl
+io/ilyahaker/sokobanserver/objects/GameObjectImpl.java
+ io.ilyahaker.sokobanserver.objects.GameObjectImpl
+io/ilyahaker/sokobanserver/objects/FinishObjectIml.java
+ io.ilyahaker.sokobanserver.objects.FinishObjectIml

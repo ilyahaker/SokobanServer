@@ -23,6 +23,7 @@ public abstract class GameObjectImpl implements GameObject {
     public JsonObject getItem() {
         JsonObject item = new JsonObject();
         item.addProperty("material", material.name());
+        item.addProperty("name", name);
         return item;
     }
 }
