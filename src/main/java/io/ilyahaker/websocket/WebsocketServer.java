@@ -1,13 +1,18 @@
 package io.ilyahaker.websocket;
 
+import org.eclipse.jetty.http.HttpField;
+import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.websocket.jsr356.server.ServerContainer;
+import org.eclipse.jetty.util.component.LifeCycle;
+import org.eclipse.jetty.util.log.StdErrLog;
 import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletResponse;
 import javax.websocket.DeploymentException;
+import javax.websocket.server.ServerContainer;
 
 public class WebsocketServer {
 
