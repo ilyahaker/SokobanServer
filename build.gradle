@@ -51,6 +51,12 @@ dependencies {
     // https://mvnrepository.com/artifact/org.yaml/snakeyaml
     implementation group: 'org.yaml', name: 'snakeyaml', version: '1.29'
 
+    implementation 'org.postgresql:postgresql:42.2.23'
+
+    // https://mvnrepository.com/artifact/com.zaxxer/HikariCP
+    implementation group: 'com.zaxxer', name: 'HikariCP', version: '5.0.0'
+
+
 }
 
 //processResources {
@@ -78,5 +84,8 @@ shadowJar {
         include(dependency('org.eclipse.jetty.websocket:websocket-client:9.4.43.v20210629'))
         include(dependency('org.eclipse.jetty:jetty-client:9.4.43.v20210629'))
         include(dependency('org.yaml:snakeyaml:1.29'))
+        include(dependency('org.postgresql:postgresql:42.2.23'))
+        include(dependency('com.zaxxer:HikariCP:5.0.0'))
+        include(dependency('org.slf4j:slf4j-api:1.7.30'))
     }
 }
