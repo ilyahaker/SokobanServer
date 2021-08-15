@@ -6,4 +6,8 @@ public class FinishObjectIml extends GameObjectImpl implements FinishObject {
         super(Material.BARRIER, GameObjectType.FINISH, "Finish");
     }
 
+    @Override
+    public GameObject copy() {
+        return new FinishObjectIml();
+    }
 }

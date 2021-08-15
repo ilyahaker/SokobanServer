@@ -1,0 +1,112 @@
+package io.ilyahaker.sokobanserver.levels;
+
+import io.ilyahaker.sokobanserver.FillingStrategy;
+import io.ilyahaker.sokobanserver.menu.PageDownObjectImpl;
+import io.ilyahaker.sokobanserver.menu.PageUpObjectImpl;
+import io.ilyahaker.sokobanserver.objects.*;
+import io.ilyahaker.utils.Pair;
+import lombok.Getter;
+import org.yaml.snakeyaml.Yaml;
+
+import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class Levels {
+
+    @Getter
+    private static List<Level> levelList = new ArrayList<>();
+
+    /*
+    File could consist level name,
+    level dimension, characters and game objects,
+    list of strings is consisting the level map.
+    */
+    private static boolean loadYamlLevels() {
+        File levels = new File(Paths.get("").toAbsolutePath().toString(), "levels");
+        if (!levels.exists() || !levels.isDirectory()) {
+            System.out.println("ERROR");
+            return false;
+        }
+
+        try {
+            for (File file : levels.listFiles()) {
+                System.out.println(file.toString());
+                InputStream inputStream = new FileInputStream(file);
+                Yaml yaml = new Yaml();
+                Map<String, Object> obj = yaml.load(inputStream);
+                String name = (String) obj.get("name");
+                int playerPositionX = (Integer) obj.getOrDefault("playerPositionX", 1);
+                int playerPositionY = (Integer) obj.getOrDefault("playerPositionY", 1);
+
+                Map<Character, GameObject> objects = ((Map<String, Object>) obj.get("objects")).entrySet()
+                        .stream()
+                        .collect(Collectors.toMap(entry -> entry.getKey().charAt(0), entry -> {
+                            Map<String, Object> object = ((Map<String, Object>) entry.getValue());
+                            return switch (GameObjectType.valueOf((String) object.get("type"))) {
+                                case BOX -> new BoxObjectImpl();
+                                case FINISH -> new FinishObjectIml();
+                                case DECORATION ->
+                                        new DecorationObject(Material.valueOf((String) object.get("material")), (String) object.get("name"));
+                                case WALL ->
+                                        new WallObject(Material.valueOf((String) object.get("material")), (String) object.get("name"));
+                                default -> null;
+                            };
+                        }));
+
+                List<String> map = (List<String>) obj.get("map");
+
+                int row = 0;
+                if (map.size() - playerPositionY >= 4 && playerPositionY >= 2) {
+                     row = Math.max(playerPositionY - 2, 0);
+                }
+
+                int column = 0;
+                if (map.get(0).length() - playerPositionX >= 5 && playerPositionX >= 4) {
+                    column = Math.max(playerPositionX - 4, 0);
+                }
+                levelList.add(new LevelImpl.LevelBuilder()
+                        .name(name)
+                        .map(new FillingStrategy(objects, map).getObjects())
+                        .playerPosition(playerPositionX, playerPositionY)
+                        .startCurrentRow(row)
+                        .startCurrentColumn(column)
+                        .build());
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return true;
+    }
+
+    private static void loadTestLevels() {
+        GameObject[][] objects = new GameObject[7][14];
+        objects[1][2] = new BoxObjectImpl();
+        objects[1][3] = new DecorationObject(Material.OAK_PLANKS, "");
+        objects[0][2] = new DecorationObject(Material.OAK_PLANKS, "");
+        objects[2][2] = new DecorationObject(Material.OAK_PLANKS, "");
+        objects[0][6] = new WallObject(Material.STONE_BRICKS, "Wall");
+        objects[1][6] = new WallObject(Material.STONE_BRICKS, "Wall");
+        objects[2][6] = new WallObject(Material.STONE_BRICKS, "Wall");
+        objects[3][6] = new WallObject(Material.STONE_BRICKS, "Wall");
+        objects[4][6] = new WallObject(Material.STONE_BRICKS, "Wall");
+        objects[4][10] = new FinishObjectIml();
+
+        Level level = new LevelImpl.LevelBuilder()
+                .map(objects)
+                .name("Test Level")
+                .playerPosition(1, 1)
+                .build();
+
+        levelList.add(level);
+    }
+
+    public static void loadLevels() {
+        loadYamlLevels();
+        loadTestLevels();
+    }
+
+}

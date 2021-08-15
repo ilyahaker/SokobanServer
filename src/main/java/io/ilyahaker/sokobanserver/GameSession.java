@@ -1,12 +1,11 @@
 package io.ilyahaker.sokobanserver;
 
+import io.ilyahaker.sokobanserver.levels.Level;
 import io.ilyahaker.sokobanserver.menu.Menu;
 import io.ilyahaker.sokobanserver.objects.*;
 import io.ilyahaker.utils.Pair;
 
-import javax.websocket.CloseReason;
 import javax.websocket.Session;
-import java.io.IOException;
 import java.util.Arrays;
 
 public class GameSession {
@@ -148,10 +147,17 @@ public class GameSession {
             switch (matrix[finalRow][finalColumn].getType()) {
                 case CHOOSE_LEVEL:
                     Level level = menu.chooseLevel(finalRow, finalColumn);
-                    matrix = level.getMap();
+                    matrix = Arrays.stream(level.getMap())
+                            .map(gameObjects ->
+                                Arrays.stream(gameObjects)
+                                        .map(object -> object != null ? object.copy() : null)
+                                        .toArray(GameObject[]::new)
+                            )
+                            .toArray(GameObject[][]::new);
                     currentRow = level.getStartCurrentRow();
                     currentColumn = level.getStartCurrentColumn();
 
+                    filledFinishes = 0;
                     countFinish = Arrays.stream(matrix)
                             .flatMap(Arrays::stream)
                             .filter(object -> object != null && object.getType() == GameObjectType.FINISH)

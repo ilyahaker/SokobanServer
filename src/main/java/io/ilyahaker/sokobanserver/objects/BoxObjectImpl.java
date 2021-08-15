@@ -10,4 +10,11 @@ public class BoxObjectImpl extends MovableGameObjectImpl implements BoxObject {
     public GameObjectType getType() {
         return GameObjectType.BOX;
     }
+
+    @Override
+    public GameObject copy() {
+        BoxObject box = new BoxObjectImpl();
+        box.setUnderObject(getUnderObject());
+        return box;
+    }
 }

@@ -6,4 +6,8 @@ public class DecorationObject extends GameObjectImpl {
         super(material, GameObjectType.DECORATION, name);
     }
 
+    @Override
+    public GameObject copy() {
+        return new DecorationObject(getMaterial(), getName());
+    }
 }

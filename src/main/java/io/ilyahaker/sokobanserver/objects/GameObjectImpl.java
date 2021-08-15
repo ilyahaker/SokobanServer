@@ -1,10 +1,12 @@
 package io.ilyahaker.sokobanserver.objects;
 
 import com.google.gson.JsonObject;
+import lombok.AccessLevel;
 import lombok.Getter;
 
 public abstract class GameObjectImpl implements GameObject {
 
+    @Getter(AccessLevel.PROTECTED)
     private final Material material;
 
     @Getter

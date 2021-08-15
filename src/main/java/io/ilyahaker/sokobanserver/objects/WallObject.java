@@ -6,4 +6,8 @@ public class WallObject extends GameObjectImpl {
         super(material, GameObjectType.WALL, name);
     }
 
+    @Override
+    public GameObject copy() {
+        return new WallObject(getMaterial(), getName());
+    }
 }

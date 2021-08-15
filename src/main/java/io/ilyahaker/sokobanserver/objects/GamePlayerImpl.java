@@ -18,4 +18,11 @@ public class GamePlayerImpl extends MovableGameObjectImpl implements GamePlayer 
         this.coordinateX = coordinateX;
         this.coordinateY = coordinateY;
     }
+
+    @Override
+    public GameObject copy() {
+        GamePlayer player = new GamePlayerImpl(coordinateX, coordinateY);
+        player.setUnderObject(getUnderObject());
+        return player;
+    }
 }

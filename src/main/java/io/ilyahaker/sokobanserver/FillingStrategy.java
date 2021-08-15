@@ -28,7 +28,7 @@ public class FillingStrategy {
                     continue;
                 }
 
-                objects[i][j] = items.get(ch);
+                objects[i][j] = items.get(ch).copy();
             }
         }
     }

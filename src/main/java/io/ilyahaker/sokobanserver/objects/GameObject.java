@@ -10,4 +10,6 @@ public interface GameObject {
 
     String getName();
 
+    GameObject copy();
+
 }

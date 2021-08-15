@@ -1,8 +1,8 @@
 package io.ilyahaker.sokobanserver.menu;
 
 import io.ilyahaker.sokobanserver.FillingStrategy;
-import io.ilyahaker.sokobanserver.Level;
-import io.ilyahaker.sokobanserver.TestLevel;
+import io.ilyahaker.sokobanserver.levels.Level;
+import io.ilyahaker.sokobanserver.levels.Levels;
 import io.ilyahaker.sokobanserver.objects.DecorationObject;
 import io.ilyahaker.sokobanserver.objects.GameObject;
 import io.ilyahaker.sokobanserver.objects.Material;
@@ -28,8 +28,7 @@ public class Menu {
                 'd', new PageDownObjectImpl()),
                 List.of("ppppppppp", "prm___drp", "prm___mrp", "prm___mrp", "prm___urp", "ppppppppp")).getObjects();
 
-        levels = new Level[1];
-        levels[0] = new TestLevel();
+        levels = Levels.getLevelList().toArray(new Level[]{});
 
         fillLevels();
     }

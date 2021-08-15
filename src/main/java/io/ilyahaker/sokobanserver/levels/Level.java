@@ -1,4 +1,4 @@
-package io.ilyahaker.sokobanserver;
+package io.ilyahaker.sokobanserver.levels;
 
 import io.ilyahaker.sokobanserver.objects.*;
 import io.ilyahaker.utils.Pair;
