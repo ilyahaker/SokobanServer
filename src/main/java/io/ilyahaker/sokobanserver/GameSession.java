@@ -1,5 +1,6 @@
 package io.ilyahaker.sokobanserver;
 
+import io.ilyahaker.sokobanserver.database.api.Database;
 import io.ilyahaker.sokobanserver.levels.Level;
 import io.ilyahaker.sokobanserver.menu.Menu;
 import io.ilyahaker.sokobanserver.objects.*;
@@ -22,6 +23,8 @@ public class GameSession {
 
     private final Menu menu;
 
+    private final Database database;
+
     private long countFinish;
     private long filledFinishes;
 
@@ -30,11 +33,10 @@ public class GameSession {
         this.websocket = websocket;
         this.session = session;
         this.matrix = menu.getMenu();
-
-        fillInventory();
+        this.database = Main.getDatabase();
     }
 
-    private void fillInventory() {
+    public void fillInventory() {
         websocket.sendInventory(session, matrix, currentRow, currentColumn);
     }
 
@@ -229,10 +231,6 @@ public class GameSession {
             }
         }
 
-
-//        matrix[player.getCoordinateX()][player.getCoordinateY()] = player.getUnderObject();
-//        player.setUnderObject(matrix[currentPlayerPosition.getKey()][currentPlayerPosition.getValue()]);
-//        matrix[currentPlayerPosition.getKey()][currentPlayerPosition.getValue()] = player;
         player.setCoordinateX(currentPlayerPosition.getKey());
         player.setCoordinateY(currentPlayerPosition.getValue());
         fillInventory();
@@ -244,11 +242,6 @@ public class GameSession {
             currentColumn = 0;
 
             fillInventory();
-//            try {
-//                session.close(new CloseReason(CloseReason.CloseCodes.NORMAL_CLOSURE, "Player has been won!"));
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
         }
     }
 

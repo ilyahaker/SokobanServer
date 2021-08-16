@@ -3,13 +3,20 @@ package io.ilyahaker.sokobanserver;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import io.ilyahaker.sokobanserver.database.api.Database;
+import io.ilyahaker.sokobanserver.database.api.result.SelectResult;
 import io.ilyahaker.sokobanserver.menu.Menu;
 import io.ilyahaker.sokobanserver.objects.GameObject;
-import io.ilyahaker.utils.Pair;
 import io.ilyahaker.websocket.Websocket;
+import lombok.SneakyThrows;
 
+import javax.websocket.CloseReason;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.Base64;
 
 @ServerEndpoint(value = "/socoban/")
 public class SocobanSocket extends Websocket {
@@ -17,15 +24,78 @@ public class SocobanSocket extends Websocket {
 
     @Override
     protected void onOpen(Session session) {
-        Pair<Integer, Integer> playerPosition = new Pair<>(1, 1);
-        this.session = new GameSession(new Menu(), this, session);
     }
 
+    @SneakyThrows
     @Override
     protected void onText(Session session, String message) {
+        Database database = Main.getDatabase();
         JsonParser parser = new JsonParser();
         JsonElement element = parser.parse(message.toString());
         JsonObject object = element.getAsJsonObject();
+        if (object.has("init")) {
+            String[] messages = object.get("init").getAsString().split(" ");
+            JsonObject result = switch (messages[0]) {
+                case "login" -> {
+                    JsonObject open = new JsonObject();
+                    if (messages.length != 3) {
+                        open.addProperty("open", false);
+                        open.addProperty("error",
+                                "You don't have enough arguments. Enter /socket login [login] [password].");
+                        yield open;
+                    }
+
+                    String login = messages[1];
+                    String password = messages[2];
+                    MessageDigest digest = MessageDigest.getInstance("SHA-256");
+                    byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+                    String encodedPassword = Base64.getEncoder().encodeToString(hash);
+
+                    SelectResult selectResult = database.sync().prepareSelect("""
+                            select * from sokoban_users where login = ?;
+                            """).execute(login);
+                    if (selectResult.getRows().size() == 0) {
+                        database.async().prepareUpdate("""
+                            insert into sokoban_users (login, password)
+                            VALUES (?, ?);
+                            """).execute(login, encodedPassword);
+                    } else {
+                        String currentPassword = selectResult.getRows().get(0).getString("password");
+                        if (!encodedPassword.equals(currentPassword)) {
+                            open.addProperty("open", false);
+                            open.addProperty("error",
+                                    "Incorrect password!");
+                            yield open;
+                        }
+                    }
+
+                    open.addProperty("open", true);
+                    this.session = new GameSession(new Menu(), this, session);
+                    yield open;
+                }
+                default -> {
+                    JsonObject open = new JsonObject();
+                    open.addProperty("open", false);
+                    open.addProperty("error",
+                            "You should log in!");
+                    yield open;
+                }
+            };
+
+            JsonObject init = new JsonObject();
+            init.add("init", result);
+            sendText(init.toString(), session);
+
+            if (result.get("open").getAsBoolean()) {
+                this.session.fillInventory();
+            } else {
+                try {
+                    session.close(new CloseReason(CloseReason.CloseCodes.NORMAL_CLOSURE, "Player has not logged in!"));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
         if (!object.has("type")) {
             return;
         }

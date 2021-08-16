@@ -4,6 +4,7 @@ import io.ilyahaker.sokobanserver.database.api.Database;
 import io.ilyahaker.sokobanserver.database.api.result.SelectResult;
 import io.ilyahaker.sokobanserver.database.impl.DatabaseBuilderImpl;
 import io.ilyahaker.sokobanserver.levels.Levels;
+import lombok.Getter;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -14,6 +15,9 @@ import java.nio.file.Paths;
 import java.util.Map;
 
 public class Main {
+
+    @Getter
+    private static Database database;
 
     public static void main(String[] args) {
         File configFile = new File(Paths.get("").toAbsolutePath().toString(), "config.yml");
@@ -29,7 +33,7 @@ public class Main {
                 String databaseName = (String) config.get("databaseName");
                 boolean useSSL = (boolean) config.get("useSSL");
 
-                Database database = Database.builder()
+                database = Database.builder()
                         .host(host)
                         .login(login)
                         .password(password)
@@ -43,7 +47,8 @@ public class Main {
                 database.async().update("""
                     create table if not exists sokoban_users (
                     id serial,
-                    name text not null,
+                    login text not null,
+                    password text not null,
                     primary key (id));
                 """);
 
