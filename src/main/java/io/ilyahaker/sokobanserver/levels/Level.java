@@ -7,6 +7,8 @@ public interface Level {
 
     GameObject[][] getMap();
 
+    int getId();
+
     String getName();
 
     Pair<Integer, Integer> getPlayerPosition();

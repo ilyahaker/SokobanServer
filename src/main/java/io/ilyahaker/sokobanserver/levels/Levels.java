@@ -37,6 +37,7 @@ public class Levels {
                 InputStream inputStream = new FileInputStream(file);
                 Yaml yaml = new Yaml();
                 Map<String, Object> obj = yaml.load(inputStream);
+                int id = (Integer) obj.get("id");
                 String name = (String) obj.get("name");
                 int playerPositionX = (Integer) obj.getOrDefault("playerPositionX", 1);
                 int playerPositionY = (Integer) obj.getOrDefault("playerPositionY", 1);
@@ -68,6 +69,7 @@ public class Levels {
                     column = Math.max(playerPositionX - 4, 0);
                 }
                 levelList.add(new LevelImpl.LevelBuilder()
+                        .id(id)
                         .name(name)
                         .map(new FillingStrategy(objects, map).getObjects())
                         .playerPosition(playerPositionX, playerPositionY)
@@ -96,6 +98,7 @@ public class Levels {
         objects[4][10] = new FinishObjectIml();
 
         Level level = new LevelImpl.LevelBuilder()
+                .id(levelList.size() + 1)
                 .map(objects)
                 .name("Test Level")
                 .playerPosition(1, 1)
@@ -105,8 +108,8 @@ public class Levels {
     }
 
     public static void loadLevels() {
-        loadYamlLevels();
         loadTestLevels();
+        loadYamlLevels();
     }
 
 }
