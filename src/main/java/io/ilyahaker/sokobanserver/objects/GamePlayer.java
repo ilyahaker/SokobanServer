@@ -2,6 +2,10 @@ package io.ilyahaker.sokobanserver.objects;
 
 public interface GamePlayer extends MovableGameObject {
 
+    int getId();
+
+    String getName();
+
     int getCoordinateX();
 
     int getCoordinateY();

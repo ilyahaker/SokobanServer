@@ -7,6 +7,8 @@ import io.ilyahaker.sokobanserver.database.api.Database;
 import io.ilyahaker.sokobanserver.database.api.result.SelectResult;
 import io.ilyahaker.sokobanserver.menu.Menu;
 import io.ilyahaker.sokobanserver.objects.GameObject;
+import io.ilyahaker.sokobanserver.objects.GamePlayer;
+import io.ilyahaker.sokobanserver.objects.GamePlayerImpl;
 import io.ilyahaker.websocket.Websocket;
 import lombok.SneakyThrows;
 
@@ -69,8 +71,10 @@ public class SocobanSocket extends Websocket {
                         }
                     }
 
+                    int id = selectResult.getRows().get(0).getInt("id");
                     open.addProperty("open", true);
-                    this.session = new GameSession(new Menu(), this, session);
+                    GamePlayer player = new GamePlayerImpl(id, login);
+                    this.session = new GameSession(new Menu(), this, session, player);
                     yield open;
                 }
                 default -> {

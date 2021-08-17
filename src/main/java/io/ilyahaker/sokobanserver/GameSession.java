@@ -28,12 +28,13 @@ public class GameSession {
     private long countFinish;
     private long filledFinishes;
 
-    public GameSession(Menu menu, SocobanSocket websocket, Session session) {
+    public GameSession(Menu menu, SocobanSocket websocket, Session session, GamePlayer player) {
         this.menu = menu;
         this.websocket = websocket;
         this.session = session;
         this.matrix = menu.getMenu();
         this.database = Main.getDatabase();
+        this.player = player;
     }
 
     public void fillInventory() {
@@ -165,7 +166,8 @@ public class GameSession {
                             .filter(object -> object != null && object.getType() == GameObjectType.FINISH)
                             .count();
 
-                    this.player = new GamePlayerImpl(level.getPlayerPosition().getKey(), level.getPlayerPosition().getValue());
+                    player.setCoordinateX(level.getPlayerPosition().getKey());
+                    player.setCoordinateY(level.getPlayerPosition().getValue());
                     player.setUnderObject(matrix[player.getCoordinateX()][player.getCoordinateY()]);
                     matrix[player.getCoordinateX()][player.getCoordinateY()] = player;
 

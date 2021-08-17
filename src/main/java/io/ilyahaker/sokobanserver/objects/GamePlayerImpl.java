@@ -6,6 +6,12 @@ import lombok.Setter;
 public class GamePlayerImpl extends MovableGameObjectImpl implements GamePlayer {
 
     @Getter
+    private final int id;
+
+    @Getter
+    private final String name;
+
+    @Getter
     @Setter
     private int coordinateX;
 
@@ -13,16 +19,18 @@ public class GamePlayerImpl extends MovableGameObjectImpl implements GamePlayer 
     @Setter
     private int coordinateY;
 
-    public GamePlayerImpl(int coordinateX, int coordinateY) {
-        super(Material.PLAYER_HEAD, "Player");
-        this.coordinateX = coordinateX;
-        this.coordinateY = coordinateY;
+    public GamePlayerImpl(int id, String name) {
+        super(Material.PLAYER_HEAD, name);
+        this.id = id;
+        this.name = name;
     }
 
     @Override
     public GameObject copy() {
-        GamePlayer player = new GamePlayerImpl(coordinateX, coordinateY);
-        player.setUnderObject(getUnderObject());
+        GamePlayer player = new GamePlayerImpl(id, name);
+        player.setCoordinateX(coordinateX);
+        player.setCoordinateY(coordinateY);
+        player.setUnderObject(getUnderObject().copy());
         return player;
     }
 }
