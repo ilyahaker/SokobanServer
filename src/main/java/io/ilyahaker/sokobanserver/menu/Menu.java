@@ -5,6 +5,7 @@ import io.ilyahaker.sokobanserver.levels.Level;
 import io.ilyahaker.sokobanserver.levels.Levels;
 import io.ilyahaker.sokobanserver.objects.DecorationObject;
 import io.ilyahaker.sokobanserver.objects.GameObject;
+import io.ilyahaker.sokobanserver.objects.GamePlayer;
 import io.ilyahaker.sokobanserver.objects.Material;
 import lombok.Getter;
 
@@ -13,6 +14,8 @@ import java.util.Map;
 
 public class Menu {
 
+    private final GamePlayer player;
+
     @Getter
     private final GameObject[][] menu;
 
@@ -20,7 +23,7 @@ public class Menu {
 
     private final Level[] levels;
 
-    public Menu() {
+    public Menu(GamePlayer player) {
         menu = new FillingStrategy(Map.of('p', new DecorationObject(Material.PURPLE_STAINED_GLASS, ""),
                 'r', new DecorationObject(Material.RED_STAINED_GLASS, ""),
                 'm', new DecorationObject(Material.MAGENTA_STAINED_GLASS, ""),
@@ -29,6 +32,7 @@ public class Menu {
                 List.of("ppppppppp", "prm___drp", "prm___mrp", "prm___mrp", "prm___urp", "ppppppppp")).getObjects();
 
         levels = Levels.getLevelList().toArray(new Level[]{});
+        this.player = player;
 
         fillLevels();
     }
@@ -47,7 +51,7 @@ public class Menu {
 
     public void fillLevels() {
         for (int i = page * 3; i < levels.length; i++) {
-            menu[1 + i / 3 - page][3 + i % 3] = new LevelObjectImpl(levels[i].getName());
+            menu[1 + i / 3 - page][3 + i % 3] = new LevelObjectImpl(levels[i].getName(), player, levels[i].getId());
         }
     }
 

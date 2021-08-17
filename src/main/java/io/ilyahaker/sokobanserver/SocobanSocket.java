@@ -74,7 +74,7 @@ public class SocobanSocket extends Websocket {
                     int id = selectResult.getRows().get(0).getInt("id");
                     open.addProperty("open", true);
                     GamePlayer player = new GamePlayerImpl(id, login);
-                    this.session = new GameSession(new Menu(), this, session, player);
+                    this.session = new GameSession(new Menu(player), this, session, player);
                     yield open;
                 }
                 default -> {

@@ -1,13 +1,16 @@
 package io.ilyahaker.sokobanserver;
 
 import io.ilyahaker.sokobanserver.database.api.Database;
+import io.ilyahaker.sokobanserver.database.api.result.Row;
 import io.ilyahaker.sokobanserver.levels.Level;
+import io.ilyahaker.sokobanserver.menu.LevelObject;
 import io.ilyahaker.sokobanserver.menu.Menu;
 import io.ilyahaker.sokobanserver.objects.*;
 import io.ilyahaker.utils.Pair;
 
 import javax.websocket.Session;
 import java.util.Arrays;
+import java.util.List;
 
 public class GameSession {
 
@@ -23,7 +26,12 @@ public class GameSession {
 
     private final Menu menu;
 
+    private Level currentLevel;
+    private LevelObject currentLevelObject;
+
     private final Database database;
+
+    private int steps = 0;
 
     private long countFinish;
     private long filledFinishes;
@@ -149,25 +157,25 @@ public class GameSession {
         if (matrix[finalRow][finalColumn] != null) {
             switch (matrix[finalRow][finalColumn].getType()) {
                 case CHOOSE_LEVEL:
-                    Level level = menu.chooseLevel(finalRow, finalColumn);
-                    matrix = Arrays.stream(level.getMap())
+                    currentLevel = menu.chooseLevel(finalRow, finalColumn);
+                    currentLevelObject = (LevelObject) matrix[finalRow][finalColumn];
+                    matrix = Arrays.stream(currentLevel.getMap())
                             .map(gameObjects ->
                                 Arrays.stream(gameObjects)
                                         .map(object -> object != null ? object.copy() : null)
                                         .toArray(GameObject[]::new)
                             )
                             .toArray(GameObject[][]::new);
-                    currentRow = level.getStartCurrentRow();
-                    currentColumn = level.getStartCurrentColumn();
+                    currentRow = currentLevel.getStartCurrentRow();
+                    currentColumn = currentLevel.getStartCurrentColumn();
 
-                    filledFinishes = 0;
                     countFinish = Arrays.stream(matrix)
                             .flatMap(Arrays::stream)
                             .filter(object -> object != null && object.getType() == GameObjectType.FINISH)
                             .count();
 
-                    player.setCoordinateX(level.getPlayerPosition().getKey());
-                    player.setCoordinateY(level.getPlayerPosition().getValue());
+                    player.setCoordinateX(currentLevel.getPlayerPosition().getKey());
+                    player.setCoordinateY(currentLevel.getPlayerPosition().getValue());
                     player.setUnderObject(matrix[player.getCoordinateX()][player.getCoordinateY()]);
                     matrix[player.getCoordinateX()][player.getCoordinateY()] = player;
 
@@ -235,14 +243,41 @@ public class GameSession {
 
         player.setCoordinateX(currentPlayerPosition.getKey());
         player.setCoordinateY(currentPlayerPosition.getValue());
+        steps++;
         fillInventory();
 
         if (filledFinishes == countFinish) {
             System.out.println("PLAYER WON!!!!");
-            this.matrix = menu.getMenu();
+            List<Row> rows = Main.getDatabase().sync()
+                    .prepareSelect("""
+                        select * from sokoban_passed_levels where player_id = ? and level_id = ?;
+                        """).execute(player.getId(), currentLevel.getId()).getRows();
+
+            if (rows.isEmpty()) {
+                Main.getDatabase().async()
+                        .prepareUpdate("""
+                                insert into sokoban_passed_levels VALUES (?, ?, ?, ?);
+                                """)
+                        .execute(player.getId(), currentLevel.getId(), steps, steps);
+            } else {
+                Main.getDatabase().async()
+                        .prepareUpdate("""
+                                update sokoban_passed_levels set (steps, last_steps) = (?, ?)
+                                where player_id = ? and level_id = ?;
+                                """)
+                        .execute(Math.min(rows.get(0).getInt("steps"), steps), steps,
+                                player.getId(), currentLevel.getId());
+            }
+
+            currentLevelObject.update();
+            currentLevelObject = null;
+            currentLevel = null;
+            filledFinishes = 0;
             currentRow = 0;
             currentColumn = 0;
+            steps = 0;
 
+            this.matrix = menu.getMenu();
             fillInventory();
         }
     }

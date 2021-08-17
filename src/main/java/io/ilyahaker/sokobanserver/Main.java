@@ -56,8 +56,8 @@ public class Main {
                     create table if not exists sokoban_passed_levels (
                     player_id int,
                     level_id int,
-                    passed boolean not null default false,
-                    steps int not null default 0,
+                    steps int default 0,
+                    last_steps int default 0,
                     primary key (player_id, level_id));
                 """);
             } catch (FileNotFoundException e) {
