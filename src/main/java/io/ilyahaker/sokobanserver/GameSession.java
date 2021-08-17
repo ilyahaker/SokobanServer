@@ -2,6 +2,7 @@ package io.ilyahaker.sokobanserver;
 
 import io.ilyahaker.sokobanserver.database.api.Database;
 import io.ilyahaker.sokobanserver.database.api.result.Row;
+import io.ilyahaker.sokobanserver.levels.FinalDisplay;
 import io.ilyahaker.sokobanserver.levels.Level;
 import io.ilyahaker.sokobanserver.menu.LevelObject;
 import io.ilyahaker.sokobanserver.menu.Menu;
@@ -17,6 +18,8 @@ public class GameSession {
     private GameObject[][] matrix;
 
     private int currentColumn = 0, currentRow = 0;
+
+    private boolean finished = false;
 
     private GamePlayer player;
 
@@ -151,6 +154,12 @@ public class GameSession {
     }
 
     public void handleClick(int row, int column) {
+        if (finished) {
+            finished = false;
+            this.matrix = menu.getMenu();
+            fillInventory();
+        }
+
         int finalRow = row + currentRow,
                 finalColumn = column + currentColumn;
 
@@ -269,6 +278,7 @@ public class GameSession {
                                 player.getId(), currentLevel.getId());
             }
 
+            this.matrix = new FinalDisplay(List.of("You have finished with " + steps + " steps!")).getDisplay();
             currentLevelObject.update();
             currentLevelObject = null;
             currentLevel = null;
@@ -276,8 +286,8 @@ public class GameSession {
             currentRow = 0;
             currentColumn = 0;
             steps = 0;
+            finished = true;
 
-            this.matrix = menu.getMenu();
             fillInventory();
         }
     }

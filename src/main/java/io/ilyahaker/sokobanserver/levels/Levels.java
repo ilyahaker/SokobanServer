@@ -50,7 +50,8 @@ public class Levels {
                                 case BOX -> new BoxObjectImpl();
                                 case FINISH -> new FinishObjectIml();
                                 case DECORATION ->
-                                        new DecorationObject(Material.valueOf((String) object.get("material")), (String) object.get("name"));
+                                        new DecorationObject(Material.valueOf((String) object.get("material")), (String) object.get("name"),
+                                                new ArrayList<>());
                                 case WALL ->
                                         new WallObject(Material.valueOf((String) object.get("material")), (String) object.get("name"));
                                 default -> null;
@@ -87,9 +88,9 @@ public class Levels {
     private static void loadTestLevels() {
         GameObject[][] objects = new GameObject[7][14];
         objects[1][2] = new BoxObjectImpl();
-        objects[1][3] = new DecorationObject(Material.OAK_PLANKS, "");
-        objects[0][2] = new DecorationObject(Material.OAK_PLANKS, "");
-        objects[2][2] = new DecorationObject(Material.OAK_PLANKS, "");
+        objects[1][3] = new DecorationObject(Material.OAK_PLANKS, " ", new ArrayList<>());
+        objects[0][2] = new DecorationObject(Material.OAK_PLANKS, " ", new ArrayList<>());
+        objects[2][2] = new DecorationObject(Material.OAK_PLANKS, " ", new ArrayList<>());
         objects[0][6] = new WallObject(Material.STONE_BRICKS, "Wall");
         objects[1][6] = new WallObject(Material.STONE_BRICKS, "Wall");
         objects[2][6] = new WallObject(Material.STONE_BRICKS, "Wall");

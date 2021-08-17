@@ -23,12 +23,13 @@ public abstract class GameObjectImpl implements GameObject {
     private final String name;
 
     @Getter
-    private final List<String> lore = new ArrayList<>();
+    private final List<String> lore;
 
-    public GameObjectImpl(Material material, GameObjectType type, String name) {
+    public GameObjectImpl(Material material, GameObjectType type, String name, List<String> lore) {
         this.material = material;
         this.type = type;
         this.name = name;
+        this.lore = lore;
     }
 
     @Override

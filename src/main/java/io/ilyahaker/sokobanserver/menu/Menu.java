@@ -9,6 +9,7 @@ import io.ilyahaker.sokobanserver.objects.GamePlayer;
 import io.ilyahaker.sokobanserver.objects.Material;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -24,9 +25,9 @@ public class Menu {
     private final Level[] levels;
 
     public Menu(GamePlayer player) {
-        menu = new FillingStrategy(Map.of('p', new DecorationObject(Material.PURPLE_STAINED_GLASS, ""),
-                'r', new DecorationObject(Material.RED_STAINED_GLASS, ""),
-                'm', new DecorationObject(Material.MAGENTA_STAINED_GLASS, ""),
+        menu = new FillingStrategy(Map.of('p', new DecorationObject(Material.PURPLE_STAINED_GLASS, " ", new ArrayList<>()),
+                'r', new DecorationObject(Material.RED_STAINED_GLASS, " ", new ArrayList<>()),
+                'm', new DecorationObject(Material.MAGENTA_STAINED_GLASS, " ", new ArrayList<>()),
                 'u', new PageUpObjectImpl(),
                 'd', new PageDownObjectImpl()),
                 List.of("ppppppppp", "prm___drp", "prm___mrp", "prm___mrp", "prm___urp", "ppppppppp")).getObjects();

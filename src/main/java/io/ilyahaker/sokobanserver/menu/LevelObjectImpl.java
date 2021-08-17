@@ -5,6 +5,7 @@ import io.ilyahaker.sokobanserver.database.api.result.Row;
 import io.ilyahaker.sokobanserver.objects.*;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class LevelObjectImpl extends GameObjectImpl implements LevelObject {
@@ -15,7 +16,7 @@ public class LevelObjectImpl extends GameObjectImpl implements LevelObject {
     private final int levelId;
 
     public LevelObjectImpl(String name, GamePlayer player, int levelId) {
-        super(Material.PAPER, GameObjectType.CHOOSE_LEVEL, name);
+        super(Material.PAPER, GameObjectType.CHOOSE_LEVEL, name, new ArrayList<>());
         this.player = player;
         this.levelId = levelId;
         update();

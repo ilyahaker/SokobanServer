@@ -2,6 +2,8 @@ package io.ilyahaker.sokobanserver.objects;
 
 import com.google.gson.JsonObject;
 
+import java.util.List;
+
 public interface GameObject {
 
     JsonObject getItem();
@@ -12,4 +14,5 @@ public interface GameObject {
 
     GameObject copy();
 
+    List<String> getLore();
 }
