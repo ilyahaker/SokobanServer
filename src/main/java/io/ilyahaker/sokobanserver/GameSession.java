@@ -257,30 +257,25 @@ public class GameSession {
 
         if (filledFinishes == countFinish) {
             System.out.println("PLAYER WON!!!!");
-            List<Row> rows = Main.getDatabase().sync()
-                    .prepareSelect("""
-                        select * from sokoban_passed_levels where player_id = ? and level_id = ?;
-                        """).execute(player.getId(), currentLevel.getId()).getRows();
 
-            if (rows.isEmpty()) {
+            PassedLevel passedLevel = player.getPassedLevel(currentLevel.getId());
+            if (passedLevel == null) {
                 Main.getDatabase().async()
                         .prepareUpdate("""
                                 insert into sokoban_passed_levels VALUES (?, ?, ?, ?);
                                 """)
                         .execute(player.getId(), currentLevel.getId(), steps, steps);
 
-                PassedLevel passedLevel = new PassedLevel(currentLevel, steps, steps);
-                player.putPassedLevel(currentLevel.getId(), passedLevel);
+                player.putPassedLevel(currentLevel.getId(), new PassedLevel(currentLevel, steps, steps));
             } else {
                 Main.getDatabase().async()
                         .prepareUpdate("""
                                 update sokoban_passed_levels set (steps, last_steps) = (?, ?)
                                 where player_id = ? and level_id = ?;
                                 """)
-                        .execute(Math.min(rows.get(0).getInt("steps"), steps), steps,
+                        .execute(Math.min(passedLevel.getSteps(), steps), steps,
                                 player.getId(), currentLevel.getId());
 
-                PassedLevel passedLevel = player.getPassedLevel(currentLevel.getId());
                 passedLevel.setLastSteps(steps);
                 passedLevel.setSteps(Math.min(steps, passedLevel.getSteps()));
             }
