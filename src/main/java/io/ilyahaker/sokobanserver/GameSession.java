@@ -158,6 +158,7 @@ public class GameSession {
             finished = false;
             this.matrix = menu.getMenu();
             fillInventory();
+            return;
         }
 
         int finalRow = row + currentRow,
@@ -267,6 +268,9 @@ public class GameSession {
                                 insert into sokoban_passed_levels VALUES (?, ?, ?, ?);
                                 """)
                         .execute(player.getId(), currentLevel.getId(), steps, steps);
+
+                PassedLevel passedLevel = new PassedLevel(currentLevel, steps, steps);
+                player.putPassedLevel(currentLevel.getId(), passedLevel);
             } else {
                 Main.getDatabase().async()
                         .prepareUpdate("""
@@ -275,12 +279,13 @@ public class GameSession {
                                 """)
                         .execute(Math.min(rows.get(0).getInt("steps"), steps), steps,
                                 player.getId(), currentLevel.getId());
+
+                PassedLevel passedLevel = player.getPassedLevel(currentLevel.getId());
+                passedLevel.setLastSteps(steps);
+                passedLevel.setSteps(Math.min(steps, passedLevel.getSteps()));
             }
 
             this.matrix = new FinalDisplay(List.of("You have finished with " + steps + " steps!")).getDisplay();
-            PassedLevel passedLevel = player.getPassedLevel(currentLevel.getId());
-            passedLevel.setLastSteps(steps);
-            passedLevel.setSteps(Math.min(steps, passedLevel.getSteps()));
             currentLevel = null;
             filledFinishes = 0;
             currentRow = 0;

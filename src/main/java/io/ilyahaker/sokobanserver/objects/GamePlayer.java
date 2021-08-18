@@ -18,4 +18,6 @@ public interface GamePlayer extends MovableGameObject {
 
     PassedLevel getPassedLevel(int id);
 
+    void putPassedLevel(int id, PassedLevel passedLevel);
+
 }
