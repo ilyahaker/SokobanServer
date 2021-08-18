@@ -19,6 +19,8 @@ public class Levels {
     @Getter
     private static List<Level> levelList = new ArrayList<>();
 
+    private static Map<Integer, Level> levelById = new HashMap<>();
+
     /*
     File could consist level name,
     level dimension, characters and game objects,
@@ -69,14 +71,18 @@ public class Levels {
                 if (map.get(0).length() - playerPositionX >= 5 && playerPositionX >= 4) {
                     column = Math.max(playerPositionX - 4, 0);
                 }
-                levelList.add(new LevelImpl.LevelBuilder()
+
+                Level level = new LevelImpl.LevelBuilder()
                         .id(id)
                         .name(name)
                         .map(new FillingStrategy(objects, map).getObjects())
                         .playerPosition(playerPositionX, playerPositionY)
                         .startCurrentRow(row)
                         .startCurrentColumn(column)
-                        .build());
+                        .build();
+
+                levelList.add(level);
+                levelById.put(id, level);
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -98,19 +104,25 @@ public class Levels {
         objects[4][6] = new WallObject(Material.STONE_BRICKS, "Wall");
         objects[4][10] = new FinishObjectIml();
 
+        int id = levelList.size();
         Level level = new LevelImpl.LevelBuilder()
-                .id(levelList.size() + 1)
+                .id(id)
                 .map(objects)
                 .name("Test Level")
                 .playerPosition(1, 1)
                 .build();
 
         levelList.add(level);
+        levelById.put(id, level);
     }
 
     public static void loadLevels() {
         loadTestLevels();
         loadYamlLevels();
+    }
+
+    public static Level getLevelById(int id) {
+        return levelById.get(id);
     }
 
 }

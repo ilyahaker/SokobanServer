@@ -1,5 +1,7 @@
 package io.ilyahaker.sokobanserver.objects;
 
+import io.ilyahaker.sokobanserver.levels.PassedLevel;
+
 public interface GamePlayer extends MovableGameObject {
 
     int getId();
@@ -13,5 +15,7 @@ public interface GamePlayer extends MovableGameObject {
     void setCoordinateX(int coordinateX);
 
     void setCoordinateY(int coordinateY);
+
+    PassedLevel getPassedLevel(int id);
 
 }

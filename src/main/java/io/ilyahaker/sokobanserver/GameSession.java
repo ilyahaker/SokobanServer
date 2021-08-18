@@ -4,6 +4,7 @@ import io.ilyahaker.sokobanserver.database.api.Database;
 import io.ilyahaker.sokobanserver.database.api.result.Row;
 import io.ilyahaker.sokobanserver.levels.FinalDisplay;
 import io.ilyahaker.sokobanserver.levels.Level;
+import io.ilyahaker.sokobanserver.levels.PassedLevel;
 import io.ilyahaker.sokobanserver.menu.LevelObject;
 import io.ilyahaker.sokobanserver.menu.Menu;
 import io.ilyahaker.sokobanserver.objects.*;
@@ -30,7 +31,6 @@ public class GameSession {
     private final Menu menu;
 
     private Level currentLevel;
-    private LevelObject currentLevelObject;
 
     private final Database database;
 
@@ -167,7 +167,6 @@ public class GameSession {
             switch (matrix[finalRow][finalColumn].getType()) {
                 case CHOOSE_LEVEL:
                     currentLevel = menu.chooseLevel(finalRow, finalColumn);
-                    currentLevelObject = (LevelObject) matrix[finalRow][finalColumn];
                     matrix = Arrays.stream(currentLevel.getMap())
                             .map(gameObjects ->
                                 Arrays.stream(gameObjects)
@@ -279,8 +278,9 @@ public class GameSession {
             }
 
             this.matrix = new FinalDisplay(List.of("You have finished with " + steps + " steps!")).getDisplay();
-            currentLevelObject.update();
-            currentLevelObject = null;
+            PassedLevel passedLevel = player.getPassedLevel(currentLevel.getId());
+            passedLevel.setLastSteps(steps);
+            passedLevel.setSteps(Math.min(steps, passedLevel.getSteps()));
             currentLevel = null;
             filledFinishes = 0;
             currentRow = 0;
