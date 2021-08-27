@@ -37,7 +37,7 @@ public abstract class GameObjectImpl implements GameObject {
         JsonObject item = new JsonObject();
         item.addProperty("material", material.name());
         item.addProperty("name", name);
-        item.add("lore", new Gson().toJsonTree(lore));
+        item.add("lore", new Gson().toJsonTree(getLore()));
         return item;
     }
 }

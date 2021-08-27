@@ -9,6 +9,7 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class LevelObjectImpl extends ButtonObjectImpl implements LevelObject {
 
@@ -21,15 +22,22 @@ public class LevelObjectImpl extends ButtonObjectImpl implements LevelObject {
         super(Material.PAPER, level.getName(), new ArrayList<>());
         this.player = player;
         this.level = level;
+    }
 
+    @Override
+    public List<String> getLore() {
         PassedLevel passedLevel = player.getPassedLevel(level.getId());
+        List<String> lore = new ArrayList<>(super.getLore());
+
         if (passedLevel == null) {
-            getLore().add("You have not passed this level yet.");
+            lore.add("You have not passed this level yet.");
         } else {
-            getLore().add("You had passed this level already.");
-            getLore().add("Your top result is " + passedLevel.getSteps() + " steps.");
-            getLore().add("Your last result is " + passedLevel.getLastSteps() + " steps.");
+            lore.add("You had passed this level already.");
+            lore.add("Your top result is " + passedLevel.getSteps() + " steps.");
+            lore.add("Your last result is " + passedLevel.getLastSteps() + " steps.");
         }
+
+        return lore;
     }
 
     @Override
