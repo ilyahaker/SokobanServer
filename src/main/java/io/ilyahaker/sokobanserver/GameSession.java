@@ -22,7 +22,7 @@ public class GameSession {
     @Setter
     private int currentColumn = 0, currentRow = 0;
 
-    private GamePlayer player;
+    private final GamePlayer player;
 
     private final SocobanSocket websocket;
 
