@@ -27,13 +27,13 @@ public class Menu {
                 'm', new DecorationObject(Material.MAGENTA_STAINED_GLASS, " ", new ArrayList<>()),
                 'u', new ButtonObjectImpl(Material.LIME_STAINED_GLASS_PANE, "Page up", new ArrayList<>(), session -> {
                     pageUp();
-                    session.setMatrix(getMenu());
+                    session.setCurrentMenu(getMenu());
 
                     session.fillInventory();
                 }),
                 'd', new ButtonObjectImpl(Material.LIME_STAINED_GLASS_PANE, "Page down", new ArrayList<>(), session -> {
                     pageDown();
-                    session.setMatrix(getMenu());
+                    session.setCurrentMenu(getMenu());
 
                     session.fillInventory();
                 })),

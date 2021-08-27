@@ -1,6 +1,7 @@
 package io.ilyahaker.sokobanserver.menu;
 
 import io.ilyahaker.sokobanserver.GameSession;
+import io.ilyahaker.sokobanserver.State;
 import io.ilyahaker.sokobanserver.levels.Level;
 import io.ilyahaker.sokobanserver.levels.PassedLevel;
 import io.ilyahaker.sokobanserver.objects.*;
@@ -34,7 +35,8 @@ public class LevelObjectImpl extends ButtonObjectImpl implements LevelObject {
     @Override
     public void click(GameSession session) {
         session.setCurrentLevel(level);
-        session.setMatrix(Arrays.stream(level.getMap())
+        session.setState(State.GAME);
+        session.setMap(Arrays.stream(level.getMap())
                 .map(gameObjects ->
                         Arrays.stream(gameObjects)
                                 .map(object -> object != null ? object.copy() : null)
@@ -52,8 +54,8 @@ public class LevelObjectImpl extends ButtonObjectImpl implements LevelObject {
 
         player.setCoordinateX(level.getPlayerPosition().getKey());
         player.setCoordinateY(level.getPlayerPosition().getValue());
-        player.setUnderObject(session.getMatrix()[player.getCoordinateX()][player.getCoordinateY()]);
-        session.getMatrix()[player.getCoordinateX()][player.getCoordinateY()] = player;
+        player.setUnderObject(session.getMap()[player.getCoordinateX()][player.getCoordinateY()]);
+        session.getMap()[player.getCoordinateX()][player.getCoordinateY()] = player;
 
         session.fillInventory();
     }
