@@ -62,4 +62,9 @@ public class GamePlayerImpl extends MovableGameObjectImpl implements GamePlayer 
     public PassedLevel getPassedLevel(int id) {
         return passedLevels.get(id);
     }
+
+    @Override
+    public void putPassedLevel(int id, PassedLevel passedLevel) {
+        passedLevels.put(id, passedLevel);
+    }
 }
