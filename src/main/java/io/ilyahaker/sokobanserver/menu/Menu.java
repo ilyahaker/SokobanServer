@@ -59,7 +59,7 @@ public class Menu {
 
     public void fillLevels() {
         for (int i = page * 3; i < levels.length; i++) {
-            menu[1 + i / 3 - page][3 + i % 3] = new LevelObjectImpl(levels[i].getName(), player, levels[i].getId());
+            menu[1 + i / 3 - page][3 + i % 3] = new LevelObjectImpl(levels[i], player);
         }
     }
 
