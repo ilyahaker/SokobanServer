@@ -1,8 +1,6 @@
 package io.ilyahaker.sokobanserver.levels;
 
 import io.ilyahaker.sokobanserver.FillingStrategy;
-import io.ilyahaker.sokobanserver.menu.PageDownObjectImpl;
-import io.ilyahaker.sokobanserver.menu.PageUpObjectImpl;
 import io.ilyahaker.sokobanserver.objects.DecorationObject;
 import io.ilyahaker.sokobanserver.objects.GameObject;
 import io.ilyahaker.sokobanserver.objects.Material;

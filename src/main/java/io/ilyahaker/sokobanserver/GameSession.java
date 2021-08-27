@@ -9,6 +9,8 @@ import io.ilyahaker.sokobanserver.menu.LevelObject;
 import io.ilyahaker.sokobanserver.menu.Menu;
 import io.ilyahaker.sokobanserver.objects.*;
 import io.ilyahaker.utils.Pair;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.websocket.Session;
 import java.util.Arrays;
@@ -16,8 +18,11 @@ import java.util.List;
 
 public class GameSession {
 
+    @Getter
+    @Setter
     private GameObject[][] matrix;
 
+    @Setter
     private int currentColumn = 0, currentRow = 0;
 
     private boolean finished = false;
@@ -28,14 +33,17 @@ public class GameSession {
 
     private final Session session;
 
+    @Getter
     private final Menu menu;
 
+    @Setter
     private Level currentLevel;
 
     private final Database database;
 
     private int steps = 0;
 
+    @Setter
     private long countFinish;
     private long filledFinishes;
 
@@ -164,45 +172,9 @@ public class GameSession {
         int finalRow = row + currentRow,
                 finalColumn = column + currentColumn;
 
-        if (matrix[finalRow][finalColumn] != null) {
-            switch (matrix[finalRow][finalColumn].getType()) {
-                case CHOOSE_LEVEL:
-                    currentLevel = menu.chooseLevel(finalRow, finalColumn);
-                    matrix = Arrays.stream(currentLevel.getMap())
-                            .map(gameObjects ->
-                                Arrays.stream(gameObjects)
-                                        .map(object -> object != null ? object.copy() : null)
-                                        .toArray(GameObject[]::new)
-                            )
-                            .toArray(GameObject[][]::new);
-                    currentRow = currentLevel.getStartCurrentRow();
-                    currentColumn = currentLevel.getStartCurrentColumn();
-
-                    countFinish = Arrays.stream(matrix)
-                            .flatMap(Arrays::stream)
-                            .filter(object -> object != null && object.getType() == GameObjectType.FINISH)
-                            .count();
-
-                    player.setCoordinateX(currentLevel.getPlayerPosition().getKey());
-                    player.setCoordinateY(currentLevel.getPlayerPosition().getValue());
-                    player.setUnderObject(matrix[player.getCoordinateX()][player.getCoordinateY()]);
-                    matrix[player.getCoordinateX()][player.getCoordinateY()] = player;
-
-                    fillInventory();
-                    return;
-                case PAGE_UP:
-                    menu.pageUp();
-                    this.matrix = menu.getMenu();
-
-                    fillInventory();
-                    return;
-                case PAGE_DOWN:
-                    menu.pageDown();
-                    this.matrix = menu.getMenu();
-
-                    fillInventory();
-                    return;
-            }
+        if (matrix[finalRow][finalColumn] != null && matrix[finalRow][finalColumn].getType() == GameObjectType.BUTTON) {
+            ((ButtonObject) matrix[finalRow][finalColumn]).click(this);
+            return;
         }
 
         int differenceRow = player.getCoordinateX() - finalRow,

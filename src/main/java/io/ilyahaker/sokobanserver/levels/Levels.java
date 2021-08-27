@@ -1,15 +1,11 @@
 package io.ilyahaker.sokobanserver.levels;
 
 import io.ilyahaker.sokobanserver.FillingStrategy;
-import io.ilyahaker.sokobanserver.menu.PageDownObjectImpl;
-import io.ilyahaker.sokobanserver.menu.PageUpObjectImpl;
 import io.ilyahaker.sokobanserver.objects.*;
-import io.ilyahaker.utils.Pair;
 import lombok.Getter;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;

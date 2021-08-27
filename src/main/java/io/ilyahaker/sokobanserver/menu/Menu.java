@@ -3,10 +3,7 @@ package io.ilyahaker.sokobanserver.menu;
 import io.ilyahaker.sokobanserver.FillingStrategy;
 import io.ilyahaker.sokobanserver.levels.Level;
 import io.ilyahaker.sokobanserver.levels.Levels;
-import io.ilyahaker.sokobanserver.objects.DecorationObject;
-import io.ilyahaker.sokobanserver.objects.GameObject;
-import io.ilyahaker.sokobanserver.objects.GamePlayer;
-import io.ilyahaker.sokobanserver.objects.Material;
+import io.ilyahaker.sokobanserver.objects.*;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -28,8 +25,18 @@ public class Menu {
         menu = new FillingStrategy(Map.of('p', new DecorationObject(Material.PURPLE_STAINED_GLASS, " ", new ArrayList<>()),
                 'r', new DecorationObject(Material.RED_STAINED_GLASS, " ", new ArrayList<>()),
                 'm', new DecorationObject(Material.MAGENTA_STAINED_GLASS, " ", new ArrayList<>()),
-                'u', new PageUpObjectImpl(),
-                'd', new PageDownObjectImpl()),
+                'u', new ButtonObjectImpl(Material.LIME_STAINED_GLASS_PANE, "Page up", new ArrayList<>(), session -> {
+                    pageUp();
+                    session.setMatrix(getMenu());
+
+                    session.fillInventory();
+                }),
+                'd', new ButtonObjectImpl(Material.LIME_STAINED_GLASS_PANE, "Page down", new ArrayList<>(), session -> {
+                    pageDown();
+                    session.setMatrix(getMenu());
+
+                    session.fillInventory();
+                })),
                 List.of("ppppppppp", "prm___drp", "prm___mrp", "prm___mrp", "prm___urp", "ppppppppp")).getObjects();
 
         levels = Levels.getLevelList().toArray(new Level[]{});
