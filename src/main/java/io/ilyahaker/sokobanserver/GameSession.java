@@ -197,7 +197,7 @@ public class GameSession {
                         return;
                     }
 
-                    if (map.length - currentPlayerPosition.getKey() >= 3 && currentPlayerPosition.getKey() >= 3) {
+                    if (map.length - currentPlayerPosition.getKey() >= 3 && currentPlayerPosition.getKey() >= 4) {
                         currentRow = Math.max(currentPlayerPosition.getKey() - 3, 0);
                     }
                 } else if (differenceRow > 0) {
@@ -213,7 +213,7 @@ public class GameSession {
                         return;
                     }
 
-                    if (map[0].length - currentPlayerPosition.getValue() >= 4 && currentPlayerPosition.getValue() >= 4) {
+                    if (map[0].length - currentPlayerPosition.getValue() >= 4 && currentPlayerPosition.getValue() >= 5) {
                         currentColumn = Math.max(currentPlayerPosition.getValue() - 4, 0);
                     }
                 } else if (differenceColumn > 0) {
