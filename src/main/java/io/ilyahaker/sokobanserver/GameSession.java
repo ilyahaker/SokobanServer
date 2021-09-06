@@ -5,6 +5,7 @@ import io.ilyahaker.sokobanserver.levels.FinalDisplay;
 import io.ilyahaker.sokobanserver.levels.Level;
 import io.ilyahaker.sokobanserver.levels.PassedLevel;
 import io.ilyahaker.sokobanserver.menu.Menu;
+import io.ilyahaker.sokobanserver.menu.SideMenu;
 import io.ilyahaker.sokobanserver.objects.*;
 import io.ilyahaker.utils.Pair;
 import lombok.Getter;
@@ -31,6 +32,9 @@ public class GameSession {
     @Getter
     private final Menu menu;
 
+    @Getter
+    private final SideMenu sideMenu;
+
     @Setter
     private Level currentLevel;
 
@@ -46,11 +50,12 @@ public class GameSession {
     @Setter
     private State state;
 
-    public GameSession(Menu menu, SocobanSocket websocket, Session session, GamePlayer player) {
+    public GameSession(Menu menu, SocobanSocket websocket, Session session, GamePlayer player, SideMenu sideMenu) {
         this.menu = menu;
         this.websocket = websocket;
         this.session = session;
         this.currentMenu = menu.getMenu();
+        this.sideMenu = sideMenu;
         this.database = Main.getDatabase();
         this.player = player;
         this.state = State.MENU;
@@ -58,8 +63,8 @@ public class GameSession {
 
     public void fillInventory() {
         switch (state) {
-            case MENU, FINISHED_GAME -> websocket.sendInventory(session, currentMenu, currentRow, currentColumn);
-            case GAME -> websocket.sendInventory(session, map, currentRow, currentColumn);
+            case MENU, FINISHED_GAME -> websocket.sendInventory(session, currentMenu, currentRow, currentColumn, sideMenu);
+            case GAME -> websocket.sendInventory(session, map, currentRow, currentColumn, sideMenu);
             default -> throw new IllegalStateException("You must choose session state!");
         }
     }
@@ -208,7 +213,7 @@ public class GameSession {
                         return;
                     }
 
-                    if (map[0].length - currentPlayerPosition.getValue() >= 5 && currentPlayerPosition.getValue() >= 4) {
+                    if (map[0].length - currentPlayerPosition.getValue() >= 4 && currentPlayerPosition.getValue() >= 4) {
                         currentColumn = Math.max(currentPlayerPosition.getValue() - 4, 0);
                     }
                 } else if (differenceColumn > 0) {
@@ -216,8 +221,8 @@ public class GameSession {
                         return;
                     }
 
-                    if (map[0].length - currentPlayerPosition.getValue() >= 5 && currentPlayerPosition.getValue() >= 4) {
-                        currentColumn = Math.max(currentPlayerPosition.getValue() - 4, 0);
+                    if (map[0].length - currentPlayerPosition.getValue() >= 5 && currentPlayerPosition.getValue() >= 3) {
+                        currentColumn = Math.max(currentPlayerPosition.getValue() - 3, 0);
                     }
                 }
 

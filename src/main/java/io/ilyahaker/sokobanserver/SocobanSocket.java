@@ -6,6 +6,8 @@ import com.google.gson.JsonParser;
 import io.ilyahaker.sokobanserver.database.api.Database;
 import io.ilyahaker.sokobanserver.database.api.result.SelectResult;
 import io.ilyahaker.sokobanserver.menu.Menu;
+import io.ilyahaker.sokobanserver.menu.SideMenu;
+import io.ilyahaker.sokobanserver.objects.ButtonObject;
 import io.ilyahaker.sokobanserver.objects.GameObject;
 import io.ilyahaker.sokobanserver.objects.GamePlayer;
 import io.ilyahaker.sokobanserver.objects.GamePlayerImpl;
@@ -74,7 +76,7 @@ public class SocobanSocket extends Websocket {
                     int id = selectResult.getRows().get(0).getInt("id");
                     open.addProperty("open", true);
                     GamePlayer player = new GamePlayerImpl(id, login);
-                    this.session = new GameSession(new Menu(player), this, session, player);
+                    this.session = new GameSession(new Menu(player), this, session, player, new SideMenu(player));
                     yield open;
                 }
                 default -> {
@@ -114,17 +116,24 @@ public class SocobanSocket extends Websocket {
     }
 
 
-    public void sendInventory(Session session, GameObject[][] matrix, int currentRow, int currentColumn) {
+    public void sendInventory(Session session, GameObject[][] matrix, int currentRow, int currentColumn, SideMenu sideMenu) {
         JsonObject inventory = new JsonObject();
+        ButtonObject[] objects = sideMenu.getButtons();
         for (int row = 0; row < 6; row++) {
             boolean empty = true;
             JsonObject jsonRow = new JsonObject();
-            for (int column = 0; column < 9; column++) {
+            for (int column = 0; column < 8; column++) {
                 JsonObject object = getItem(matrix, row + currentRow, column + currentColumn);
                 if (object != null) {
                     empty = false;
                     jsonRow.add(String.valueOf(column), object);
                 }
+            }
+
+            JsonObject object = getItem(objects[row]);
+            if (object != null) {
+                empty = false;
+                jsonRow.add(Integer.toString(8), object);
             }
 
             if (!empty) {
@@ -137,10 +146,13 @@ public class SocobanSocket extends Websocket {
 
     private JsonObject getItem(GameObject[][] matrix, int row, int column) {
         if (row < matrix.length && column < matrix[0].length) {
-            GameObject gameObject = matrix[row][column];
-            return gameObject == null ? null : gameObject.getItem();
+            return getItem(matrix[row][column]);
         } else {
             return null;
         }
+    }
+
+    private JsonObject getItem(GameObject gameObject) {
+        return gameObject == null ? null : gameObject.getItem();
     }
 }
