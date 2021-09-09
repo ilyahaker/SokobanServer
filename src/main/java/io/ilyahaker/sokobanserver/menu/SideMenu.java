@@ -28,6 +28,12 @@ public class SideMenu {
 
             session.fillInventory();
         });
+        buttons[5] = new ButtonObjectImpl(Material.LIME_STAINED_GLASS_PANE, "Next items", new ArrayList<>(), session -> {
+            nextItems();
+
+            session.fillInventory();
+        });
+
         menu = new ArrayList<>();
     }
 
