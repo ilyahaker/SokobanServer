@@ -1,8 +1,16 @@
 package io.ilyahaker.sokobanserver.levels;
 
+import io.ilyahaker.sokobanserver.objects.BoxObject;
+import io.ilyahaker.sokobanserver.objects.FinishObject;
 import io.ilyahaker.sokobanserver.objects.GameObject;
+import io.ilyahaker.sokobanserver.objects.MovableGameObject;
 import io.ilyahaker.utils.Pair;
 import lombok.Getter;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class LevelImpl implements Level {
 
@@ -24,13 +32,29 @@ public class LevelImpl implements Level {
     @Getter
     private final int startCurrentColumn;
 
-    private LevelImpl(GameObject[][] map, String name, int id, Pair<Integer, Integer> playerPosition, int startCurrentRow, int startCurrentColumn) {
+    @Getter
+    private final Map<Pair<Integer, Integer>, MovableGameObject> movableGameObjects;
+
+    @Getter
+    private final Map<Pair<Integer, Integer>, BoxObject> boxObjects;
+
+    @Getter
+    private final Map<Pair<Integer, Integer>, FinishObject> finishObjects;
+
+    private LevelImpl(GameObject[][] map, String name, int id,
+                      Pair<Integer, Integer> playerPosition, int startCurrentRow,
+                      int startCurrentColumn, Map<Pair<Integer, Integer>, MovableGameObject> movableGameObjects,
+                      Map<Pair<Integer, Integer>, BoxObject> boxObjects,
+                      Map<Pair<Integer, Integer>, FinishObject> finishObjects) {
         this.map = map;
         this.name = name;
         this.id = id;
         this.playerPosition = playerPosition;
         this.startCurrentRow = startCurrentRow;
         this.startCurrentColumn = startCurrentColumn;
+        this.movableGameObjects = movableGameObjects;
+        this.boxObjects = boxObjects;
+        this.finishObjects = finishObjects;
     }
 
     public static class LevelBuilder {
@@ -41,6 +65,9 @@ public class LevelImpl implements Level {
         private int startCurrentRow = 0;
         private int startCurrentColumn = 0;
         private int id;
+        private Map<Pair<Integer, Integer>, MovableGameObject> movableGameObjects = new HashMap<>();
+        private Map<Pair<Integer, Integer>, BoxObject> boxObjects = new HashMap<>();
+        private Map<Pair<Integer, Integer>, FinishObject> finishObjects = new HashMap<>();
 
         public LevelBuilder map(GameObject[][] map) {
             this.map = map;
@@ -72,8 +99,23 @@ public class LevelImpl implements Level {
             return this;
         }
 
+        public LevelBuilder movableGameObjects(Map<Pair<Integer, Integer>, MovableGameObject> movableGameObjects) {
+            this.movableGameObjects = movableGameObjects;
+            return this;
+        }
+
+        public LevelBuilder boxObjects(Map<Pair<Integer, Integer>, BoxObject> boxObjects) {
+            this.boxObjects = boxObjects;
+            return this;
+        }
+
+        public LevelBuilder finishObjects(Map<Pair<Integer, Integer>, FinishObject> finishObjects) {
+            this.finishObjects = finishObjects;
+            return this;
+        }
+
         public Level build() {
-            return new LevelImpl(map, name, id, playerPosition, startCurrentRow, startCurrentColumn);
+            return new LevelImpl(map, name, id, playerPosition, startCurrentRow, startCurrentColumn, movableGameObjects, boxObjects, finishObjects);
         }
 
     }

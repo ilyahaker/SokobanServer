@@ -1,5 +1,6 @@
 package io.ilyahaker.sokobanserver.objects;
 
+import io.ilyahaker.sokobanserver.GameSession;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,8 +17,20 @@ public class MovableGameObjectImpl extends GameObjectImpl implements MovableGame
     }
 
     @Override
+    public boolean move(GameSession.Direction direction, GameSession session) {
+        switch (direction) {
+            case UP -> {
+
+            }
+        }
+        return false;
+    }
+
+    @Override
     public GameObject copy() {
         MovableGameObject movableGameObject = new MovableGameObjectImpl(getMaterial(), getName());
+        movableGameObject.setCoordinateX(getCoordinateX());
+        movableGameObject.setCoordinateY(getCoordinateY());
         movableGameObject.setUnderObject(this.underObject);
         return movableGameObject;
     }

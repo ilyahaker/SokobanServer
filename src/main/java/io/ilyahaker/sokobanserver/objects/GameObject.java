@@ -15,4 +15,12 @@ public interface GameObject {
     GameObject copy();
 
     List<String> getLore();
+
+    int getCoordinateX();
+
+    int getCoordinateY();
+
+    void setCoordinateX(int coordinateX);
+
+    void setCoordinateY(int coordinateY);
 }

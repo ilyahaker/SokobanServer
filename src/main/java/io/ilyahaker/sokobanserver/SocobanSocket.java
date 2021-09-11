@@ -7,10 +7,8 @@ import io.ilyahaker.sokobanserver.database.api.Database;
 import io.ilyahaker.sokobanserver.database.api.result.SelectResult;
 import io.ilyahaker.sokobanserver.menu.Menu;
 import io.ilyahaker.sokobanserver.menu.SideMenu;
-import io.ilyahaker.sokobanserver.objects.ButtonObject;
-import io.ilyahaker.sokobanserver.objects.GameObject;
-import io.ilyahaker.sokobanserver.objects.GamePlayer;
-import io.ilyahaker.sokobanserver.objects.GamePlayerImpl;
+import io.ilyahaker.sokobanserver.objects.*;
+import io.ilyahaker.utils.Pair;
 import io.ilyahaker.websocket.Websocket;
 import lombok.SneakyThrows;
 
@@ -21,6 +19,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Base64;
+import java.util.List;
+import java.util.Map;
 
 @ServerEndpoint(value = "/socoban/")
 public class SocobanSocket extends Websocket {
@@ -113,6 +113,55 @@ public class SocobanSocket extends Websocket {
         int row = object.get("i").getAsInt();
         int column = object.get("j").getAsInt();
         this.session.handleClick(row, column);
+    }
+
+
+    public void sendInventory(Session session, GameObject[][] matrix,
+                              Map<Pair<Integer, Integer>, MovableGameObject> movableGameObjects,
+                              Map<Pair<Integer, Integer>, BoxObject> boxObjects,
+                              Map<Pair<Integer, Integer>, FinishObject> finishObjects,
+                              Map<Pair<Integer, Integer>, GamePlayer> players,
+                              int currentRow, int currentColumn, SideMenu sideMenu) {
+        JsonObject inventory = new JsonObject();
+        ButtonObject[] objects = sideMenu.getButtons();
+        for (int row = 0; row < 6; row++) {
+            boolean empty = true;
+            JsonObject jsonRow = new JsonObject();
+            int finalRow = row + currentRow;
+            for (int column = 0; column < 8; column++) {
+                int finalColumn = column + currentColumn;
+                JsonObject object;
+                Pair<Integer, Integer> pair = new Pair<>(finalColumn, finalRow);
+                if (players.containsKey(pair)) {
+                    object = getItem(players.get(pair));
+                } else if (movableGameObjects.containsKey(pair)) {
+                    object = getItem(movableGameObjects.get(pair));
+                } else if (boxObjects.containsKey(pair)) {
+                    object = getItem(boxObjects.get(pair));
+                } else if (finishObjects.containsKey(pair)) {
+                    object = getItem(finishObjects.get(pair));
+                } else {
+                    object = getItem(matrix, row + currentRow, column + currentColumn);
+                }
+
+                if (object != null) {
+                    empty = false;
+                    jsonRow.add(String.valueOf(column), object);
+                }
+            }
+
+            JsonObject object = getItem(objects[row]);
+            if (object != null) {
+                empty = false;
+                jsonRow.add(Integer.toString(8), object);
+            }
+
+            if (!empty) {
+                inventory.add(String.valueOf(row), jsonRow);
+            }
+        }
+
+        sendText(inventory.toString(), session);
     }
 
 

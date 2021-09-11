@@ -2,6 +2,7 @@ package io.ilyahaker.sokobanserver.levels;
 
 import io.ilyahaker.sokobanserver.FillingStrategy;
 import io.ilyahaker.sokobanserver.objects.*;
+import io.ilyahaker.utils.Pair;
 import lombok.Getter;
 import org.yaml.snakeyaml.Yaml;
 
@@ -68,10 +69,14 @@ public class Levels {
                     column = Math.max(playerPositionX - 4, 0);
                 }
 
+                FillingStrategy fillingStrategy = new FillingStrategy(objects, map);
                 Level level = new LevelImpl.LevelBuilder()
                         .id(id)
                         .name(name)
-                        .map(new FillingStrategy(objects, map).getObjects())
+                        .map(fillingStrategy.getObjects())
+                        .movableGameObjects(fillingStrategy.getMovableGameObjects())
+                        .boxObjects(fillingStrategy.getBoxObjects())
+                        .finishObjects(fillingStrategy.getFinishObjects())
                         .playerPosition(playerPositionX, playerPositionY)
                         .startCurrentRow(row)
                         .startCurrentColumn(column)
@@ -89,7 +94,9 @@ public class Levels {
 
     private static void loadTestLevels() {
         GameObject[][] objects = new GameObject[7][14];
-        objects[1][2] = new BoxObjectImpl();
+        Map<Pair<Integer, Integer>, BoxObject> boxObjects = Map.of(new Pair<>(2, 1), new BoxObjectImpl());
+        Map<Pair<Integer, Integer>, FinishObject> finishObjects = Map.of(new Pair<>(10, 4), new FinishObjectIml());
+//        objects[1][2] = new BoxObjectImpl();
         objects[1][3] = new DecorationObject(Material.OAK_PLANKS, " ", new ArrayList<>());
         objects[0][2] = new DecorationObject(Material.OAK_PLANKS, " ", new ArrayList<>());
         objects[2][2] = new DecorationObject(Material.OAK_PLANKS, " ", new ArrayList<>());
@@ -98,7 +105,7 @@ public class Levels {
         objects[2][6] = new WallObject(Material.STONE_BRICKS, "Wall");
         objects[3][6] = new WallObject(Material.STONE_BRICKS, "Wall");
         objects[4][6] = new WallObject(Material.STONE_BRICKS, "Wall");
-        objects[4][10] = new FinishObjectIml();
+//        objects[4][10] = new FinishObjectIml();
 
         int id = levelList.size();
         Level level = new LevelImpl.LevelBuilder()
@@ -106,6 +113,8 @@ public class Levels {
                 .map(objects)
                 .name("Test Level")
                 .playerPosition(1, 1)
+                .boxObjects(boxObjects)
+                .finishObjects(finishObjects)
                 .build();
 
         levelList.add(level);

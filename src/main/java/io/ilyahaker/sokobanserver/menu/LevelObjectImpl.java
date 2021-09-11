@@ -5,11 +5,13 @@ import io.ilyahaker.sokobanserver.State;
 import io.ilyahaker.sokobanserver.levels.Level;
 import io.ilyahaker.sokobanserver.levels.PassedLevel;
 import io.ilyahaker.sokobanserver.objects.*;
+import io.ilyahaker.utils.Pair;
 import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class LevelObjectImpl extends ButtonObjectImpl implements LevelObject {
 
@@ -44,26 +46,28 @@ public class LevelObjectImpl extends ButtonObjectImpl implements LevelObject {
     public void click(GameSession session) {
         session.setCurrentLevel(level);
         session.setState(State.GAME);
-        session.setMap(Arrays.stream(level.getMap())
+        GameObject[][] map = Arrays.stream(level.getMap())
                 .map(gameObjects ->
                         Arrays.stream(gameObjects)
                                 .map(object -> object != null ? object.copy() : null)
                                 .toArray(GameObject[]::new)
                 )
-                .toArray(GameObject[][]::new));
+                .toArray(GameObject[][]::new);
 
+        session.setMap(map);
         session.setCurrentRow(level.getStartCurrentRow());
         session.setCurrentColumn(level.getStartCurrentColumn());
 
-        session.setCountFinish(Arrays.stream(level.getMap())
-                .flatMap(Arrays::stream)
-                .filter(object -> object != null && object.getType() == GameObjectType.FINISH)
-                .count());
+        session.setMovableGameObjects(level.getMovableGameObjects());
+        session.setBoxObjects(level.getBoxObjects());
+        session.setFinishObjects(level.getFinishObjects());
+
+        session.setCountFinish(level.getFinishObjects().size());
 
         player.setCoordinateX(level.getPlayerPosition().getKey());
         player.setCoordinateY(level.getPlayerPosition().getValue());
-        player.setUnderObject(session.getMap()[player.getCoordinateX()][player.getCoordinateY()]);
-        session.getMap()[player.getCoordinateX()][player.getCoordinateY()] = player;
+        session.setPlayers(Map.of(new Pair<>(player.getCoordinateX(), player.getCoordinateY()), player));
+        player.setUnderObject(map[player.getCoordinateX()][player.getCoordinateY()]);
 
         session.fillInventory();
     }

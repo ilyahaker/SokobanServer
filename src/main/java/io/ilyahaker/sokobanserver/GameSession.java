@@ -12,11 +12,12 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.websocket.Session;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GameSession {
 
-    @Getter
     @Setter
     private GameObject[][] map, currentMenu;
 
@@ -24,6 +25,9 @@ public class GameSession {
     private int currentColumn = 0, currentRow = 0;
 
     private final GamePlayer player;
+
+    @Setter
+    private Map<Pair<Integer, Integer>, GamePlayer> players;
 
     private final SocobanSocket websocket;
 
@@ -50,7 +54,17 @@ public class GameSession {
     @Setter
     private State state;
 
-    public GameSession(Menu menu, SocobanSocket websocket, Session session, GamePlayer player, SideMenu sideMenu) {
+    @Setter
+    private Map<Pair<Integer, Integer>, MovableGameObject> movableGameObjects;
+
+    @Setter
+    private Map<Pair<Integer, Integer>, BoxObject> boxObjects;
+
+    @Setter
+    private Map<Pair<Integer, Integer>, FinishObject> finishObjects;
+
+    public GameSession(Menu menu, SocobanSocket websocket,
+                       Session session, GamePlayer player, SideMenu sideMenu) {
         this.menu = menu;
         this.websocket = websocket;
         this.session = session;
@@ -58,13 +72,15 @@ public class GameSession {
         this.sideMenu = sideMenu;
         this.database = Main.getDatabase();
         this.player = player;
+        players = Map.of(new Pair<>(player.getCoordinateX(), player.getCoordinateY()), player);
         this.state = State.MENU;
     }
 
     public void fillInventory() {
         switch (state) {
             case MENU, FINISHED_GAME -> websocket.sendInventory(session, currentMenu, currentRow, currentColumn, sideMenu);
-            case GAME -> websocket.sendInventory(session, map, currentRow, currentColumn, sideMenu);
+            case GAME -> websocket.sendInventory(session, map, movableGameObjects,
+                    boxObjects, finishObjects, players, currentRow, currentColumn, sideMenu);
             default -> throw new IllegalStateException("You must choose session state!");
         }
     }
@@ -193,6 +209,10 @@ public class GameSession {
 
                 //changing the starting point depending on player position
                 if (differenceRow < 0) {
+                    if (player.move(Direction.UP, this)) {
+                        return;
+                    }
+
                     if (!moveObject(finalRow, finalColumn, player, Direction.UP)) {
                         return;
                     }

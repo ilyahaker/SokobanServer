@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializer;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -24,6 +25,14 @@ public abstract class GameObjectImpl implements GameObject {
 
     @Getter
     private final List<String> lore;
+
+    @Getter
+    @Setter
+    private int coordinateX;
+
+    @Getter
+    @Setter
+    private int coordinateY;
 
     public GameObjectImpl(Material material, GameObjectType type, String name, List<String> lore) {
         this.material = material;

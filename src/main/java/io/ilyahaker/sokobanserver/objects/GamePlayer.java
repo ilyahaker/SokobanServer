@@ -8,14 +8,6 @@ public interface GamePlayer extends MovableGameObject {
 
     String getName();
 
-    int getCoordinateX();
-
-    int getCoordinateY();
-
-    void setCoordinateX(int coordinateX);
-
-    void setCoordinateY(int coordinateY);
-
     PassedLevel getPassedLevel(int id);
 
     void putPassedLevel(int id, PassedLevel passedLevel);

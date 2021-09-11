@@ -22,14 +22,6 @@ public class GamePlayerImpl extends MovableGameObjectImpl implements GamePlayer 
     private final String name;
 
     @Getter
-    @Setter
-    private int coordinateX;
-
-    @Getter
-    @Setter
-    private int coordinateY;
-
-    @Getter
     private Map<Integer, PassedLevel> passedLevels = new HashMap<>();
 
     public GamePlayerImpl(int id, String name) {
@@ -52,8 +44,8 @@ public class GamePlayerImpl extends MovableGameObjectImpl implements GamePlayer 
     @Override
     public GameObject copy() {
         GamePlayer player = new GamePlayerImpl(id, name);
-        player.setCoordinateX(coordinateX);
-        player.setCoordinateY(coordinateY);
+        player.setCoordinateX(getCoordinateX());
+        player.setCoordinateY(getCoordinateY());
         player.setUnderObject(getUnderObject().copy());
         return player;
     }
